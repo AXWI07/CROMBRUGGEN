@@ -1,0 +1,336 @@
+/* ------------------------------------------------------------------
+   Crombruggen — begin screen (aperture) + mask-distortion hero
+------------------------------------------------------------------ */
+
+:root {
+    --ink: #0a0a0b;          /* near-black, matches screen.jpeg (begin screen) */
+    --paper: #fbfaf8;        /* warm white — hero background */
+    --text: #131211;         /* near-black lettering on white */
+    --muted: #7a766f;
+    --muted-light: #8a8783;  /* for text on the black begin screen */
+    --hairline: rgba(19, 18, 17, 0.14);
+
+    --font-display: "Cormorant Garamond", Georgia, serif;
+    --font-sans: "Space Grotesk", system-ui, sans-serif;
+
+    /* driven by JS: 0 = shutter closed, 1 = fully open */
+    --iris: 0%;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--paper);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* page is locked on the begin screen; JS unlocks after the intro */
+body.is-locked { overflow: hidden; height: 100vh; }
+
+/* ------------------------------------------------------------------
+   Scroll stage — tall track, sticky viewport inside
+------------------------------------------------------------------ */
+
+/* single-screen page: the intro plays in place, no scroll track needed */
+.stage {
+    height: 100vh;
+    height: 100svh;
+}
+
+.stage-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+}
+
+/* ------------------------------------------------------------------
+   Hero
+------------------------------------------------------------------ */
+
+.hero {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(120% 90% at 50% 45%, #ffffff 0%, #f0eee9 70%);
+    overflow: hidden;
+}
+
+#mask-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 2;
+}
+
+/* Static fallback (no WebGL2): landscape portrait card */
+.hero-fallback {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(72vmin, 680px);
+    aspect-ratio: 4 / 3;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    z-index: 2;
+}
+
+.hero-fallback img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-webgl .hero-fallback { display: block; }
+.no-webgl #mask-canvas { display: none; }
+
+/* Header */
+
+.hero-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 2rem clamp(1.5rem, 4vw, 3.5rem);
+    z-index: 4;
+    /* white text + difference blend: reads dark on the white page,
+       inverts to light when the portrait passes underneath */
+    mix-blend-mode: difference;
+}
+
+.hero-brand {
+    font-family: var(--font-sans);
+    font-style: italic;
+    font-size: 1.35rem;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+}
+
+.hero-nav { display: flex; gap: 2rem; }
+
+.hero-nav a {
+    color: var(--muted-light);
+    text-decoration: none;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    padding: 0.5rem 0;
+    transition: color 200ms ease;
+}
+
+.hero-nav a:hover,
+.hero-nav a:focus-visible { color: #ffffff; }
+
+.hero-nav a:focus-visible,
+.hero-brand:focus-visible {
+    outline: 1px solid #ffffff;
+    outline-offset: 4px;
+}
+
+/* ------------------------------------------------------------------
+   Shutter — the begin screen; splits in two halves on scroll
+------------------------------------------------------------------ */
+
+.shutter {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    /* driven by JS: 0 = closed, 1 = fully open */
+    --split: 0;
+}
+
+.shutter-half {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    background: var(--ink);
+    will-change: transform;
+}
+
+.shutter-top {
+    top: 0;
+    transform: translateY(calc(var(--split) * -100.5%));
+}
+
+.shutter-bottom {
+    bottom: 0;
+    transform: translateY(calc(var(--split) * 100.5%));
+}
+
+/* each half shows its own part of the full-viewport image */
+.shutter-half img {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    object-fit: cover;
+    /* 1.04 crops the white border baked into screen.jpeg */
+    transform: scale(1.04);
+}
+
+.shutter-top img { top: 0; }
+.shutter-bottom img { bottom: 0; }
+
+.shutter-hint {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    padding-bottom: 0;
+    opacity: calc(1 - var(--split, 0) * 2.5);
+}
+
+.shutter-hint-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--muted-light);
+}
+
+.shutter-hint-line {
+    width: 1px;
+    height: 3.4rem;
+    background: linear-gradient(var(--muted-light), transparent);
+    animation: hint-drop 2.2s ease-in-out infinite;
+    transform-origin: top;
+}
+
+@keyframes hint-drop {
+    0%   { transform: scaleY(0); }
+    45%  { transform: scaleY(1); }
+    100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ------------------------------------------------------------------
+   Message section — scroll-driven: rows slide apart, photo settles,
+   signature writes itself over the top
+------------------------------------------------------------------ */
+
+.message-track { height: 280vh; }
+
+.message-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.message-label {
+    position: absolute;
+    top: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--muted-light);
+    opacity: 0;
+    z-index: 4;
+}
+
+/* two nowrap type rows, stacked around the vertical center */
+.message-rows {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.message-row {
+    white-space: nowrap;
+    width: max-content;
+    line-height: 1;
+    will-change: transform;
+}
+
+.message-row-a {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(3rem, 9vw, 7.5rem);
+    color: #8f8a6f; /* muted olive-gold, echoes the reference */
+}
+
+.message-row-b {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(3rem, 9.5vw, 8rem);
+    letter-spacing: 0.01em;
+    color: var(--paper);
+}
+
+/* grayscale photo card, settles into the center */
+.message-photo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(52vw, 560px);
+    aspect-ratio: 4 / 3;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    z-index: 2;
+    will-change: transform;
+}
+
+.message-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+}
+
+/* handwritten signature, revealed left-to-right while scrolling */
+.message-signature {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -54%) rotate(-7deg);
+    font-family: "Mrs Saint Delafield", cursive;
+    font-size: clamp(4.5rem, 13vw, 11rem);
+    line-height: 1;
+    color: #ffffff;
+    white-space: nowrap;
+    z-index: 3;
+    pointer-events: none;
+    clip-path: inset(-30% 100% -30% 0);
+    will-change: clip-path;
+}
+
+/* ------------------------------------------------------------------
+   Responsive & motion preferences
+------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+    .hero-nav { gap: 1.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .shutter-hint-line { animation: none; }
+}

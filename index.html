@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crombruggen — Fotografie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Grotesk:wght@300;400;500;700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Scroll stage: sticky hero + shutter overlay that opens while scrolling -->
+    <div class="stage" id="stage">
+        <div class="stage-sticky">
+
+            <!-- Hero (revealed behind the shutter) -->
+            <section class="hero" aria-label="Intro">
+                <header class="hero-header">
+                    <a class="hero-brand" href="#">Crombruggen</a>
+                    <nav class="hero-nav" aria-label="Hoofdnavigatie">
+                        <a href="https://crombruggen.pixieset.com">Werk</a>
+                        <a href="#over">Over</a>
+                        <a href="#contact">Contact</a>
+                    </nav>
+                </header>
+
+                <!-- WebGL liquid mask reveals the portrait -->
+                <canvas id="mask-canvas" aria-hidden="true"></canvas>
+                <!-- Fallback when WebGL2 is unavailable -->
+                <div class="hero-fallback" id="hero-fallback" aria-hidden="true">
+                    <img src="images/landscape.JPG" alt="">
+                </div>
+
+            </section>
+
+            <!-- Begin screen: splits in two on scroll (top slides up, bottom slides down) -->
+            <div class="shutter" id="shutter" aria-hidden="true">
+                <div class="shutter-half shutter-top">
+                    <img src="images/screen.jpeg" alt="">
+                </div>
+                <div class="shutter-half shutter-bottom">
+                    <img src="images/screen.jpeg" alt="">
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scroll section: type rows slide apart, photo card settles, signature writes itself -->
+    <section class="message" aria-label="Achter de lens">
+        <div class="message-track" id="message-track">
+            <div class="message-sticky">
+                <p class="message-label" id="message-label">Achter de lens</p>
+                <div class="message-rows" aria-hidden="true">
+                    <p class="message-row message-row-a" id="message-row-a">FOTOGRAFIE&nbsp;&mdash; FOTOGRAFIE&nbsp;&mdash; FOTOGRAFIE&nbsp;&mdash; FOTOGRAFIE&nbsp;&mdash;</p>
+                    <p class="message-row message-row-b" id="message-row-b">VIDEOGRAFIE &bull; VIDEOGRAFIE &bull;  VIDEOGRAFIE &bull; VIDEOGRAFIE &bull;</p>
+                </div>
+                <figure class="message-photo" id="message-photo">
+                    <img src="images/portret.jpeg" alt="Portret door Crombruggen">
+                </figure>
+                <p class="message-signature" id="message-signature" aria-hidden="true">Crombruggen</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="style.js"></script>
+</body>
+</html>
