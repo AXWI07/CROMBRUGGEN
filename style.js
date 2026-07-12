@@ -55,6 +55,31 @@
     });
 
     /* --------------------------------------------------------------
+       1b. Mobile / tablet menu
+    -------------------------------------------------------------- */
+
+    var menuToggle = document.getElementById('menu-toggle');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var menuClose = document.getElementById('mobile-menu-close');
+
+    function setMenu(open) {
+        mobileMenu.classList.toggle('is-open', open);
+        mobileMenu.setAttribute('aria-hidden', String(!open));
+        menuToggle.setAttribute('aria-expanded', String(open));
+        if (open) menuClose.focus();
+        else menuToggle.focus();
+    }
+
+    menuToggle.addEventListener('click', function () { setMenu(true); });
+    menuClose.addEventListener('click', function () { setMenu(false); });
+    mobileMenu.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setMenu(false);
+    });
+    window.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('is-open')) setMenu(false);
+    });
+
+    /* --------------------------------------------------------------
        2. Message section: scroll-scrubbed rows / photo / signature
     -------------------------------------------------------------- */
 
@@ -337,6 +362,8 @@
         growth += (moveEnergy - growth) * 0.06;
 
         var radius = 0.26 * Math.min(canvas.width, canvas.height) * maskReveal * (1 + growth * 0.55);
+        // never let the blob outgrow a narrow (mobile) screen
+        radius = Math.min(radius, 0.32 * canvas.width);
 
         gl.uniform1f(uTime, t);
         gl.uniform2f(uMouse, mouse.x, mouse.y);

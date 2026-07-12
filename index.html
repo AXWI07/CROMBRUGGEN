@@ -24,6 +24,11 @@
                         <a href="#over">Over</a>
                         <a href="#contact">Contact</a>
                     </nav>
+                    <button class="menu-toggle" id="menu-toggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </header>
 
                 <!-- WebGL liquid mask reveals the portrait -->
@@ -38,10 +43,10 @@
             <!-- Begin screen: splits in two on scroll (top slides up, bottom slides down) -->
             <div class="shutter" id="shutter" aria-hidden="true">
                 <div class="shutter-half shutter-top">
-                    <img src="images/screen.jpeg" alt="">
+                    <img src="images/screen-crop.jpg" alt="">
                 </div>
                 <div class="shutter-half shutter-bottom">
-                    <img src="images/screen.jpeg" alt="">
+                    <img src="images/screen-crop.jpg" alt="">
                 </div>
                 
             </div>
@@ -65,6 +70,20 @@
             </div>
         </div>
     </section>
+
+    <!-- Mobile / tablet menu overlay -->
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Menu sluiten">
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="mobile-menu-nav" aria-label="Mobiel menu">
+            <a href="https://crombruggen.pixieset.com">Werk</a>
+            <a href="#over">Over</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <p class="mobile-menu-sign" aria-hidden="true">Crombruggen</p>
+    </div>
 
     <script src="style.js"></script>
 </body>

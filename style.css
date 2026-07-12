@@ -19,7 +19,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* guard: nothing may widen the page on mobile */
+}
 
 body {
     background: var(--paper);
@@ -30,7 +33,7 @@ body {
 }
 
 /* page is locked on the begin screen; JS unlocks after the intro */
-body.is-locked { overflow: hidden; height: 100vh; }
+body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 /* ------------------------------------------------------------------
    Scroll stage — tall track, sticky viewport inside
@@ -111,9 +114,9 @@ body.is-locked { overflow: hidden; height: 100vh; }
 }
 
 .hero-brand {
-    font-family: var(--font-sans);
-    font-style: italic;
-    font-size: 1.35rem;
+    font-family: "Mrs Saint Delafield", cursive;
+    font-size: 2rem;
+    line-height: 1;
     color: #ffffff;
     text-decoration: none;
     letter-spacing: 0.02em;
@@ -136,6 +139,33 @@ body.is-locked { overflow: hidden; height: 100vh; }
 
 .hero-nav a:focus-visible,
 .hero-brand:focus-visible {
+    outline: 1px solid #ffffff;
+    outline-offset: 4px;
+}
+
+/* Hamburger (mobile + tablet) */
+
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 1.5px;
+    background: #ffffff; /* header blend flips it dark on white */
+}
+
+.menu-toggle:focus-visible {
     outline: 1px solid #ffffff;
     outline-offset: 4px;
 }
@@ -179,8 +209,6 @@ body.is-locked { overflow: hidden; height: 100vh; }
     width: 100%;
     height: 200%;
     object-fit: cover;
-    /* 1.04 crops the white border baked into screen.jpeg */
-    transform: scale(1.04);
 }
 
 .shutter-top img { top: 0; }
@@ -323,11 +351,109 @@ body.is-locked { overflow: hidden; height: 100vh; }
 }
 
 /* ------------------------------------------------------------------
+   Mobile / tablet menu overlay
+------------------------------------------------------------------ */
+
+.mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2.2rem;
+    background: var(--ink);
+    color: var(--paper);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 350ms ease, visibility 0s linear 350ms;
+}
+
+.mobile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 350ms ease;
+}
+
+.mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+}
+
+.mobile-menu-nav a {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--paper);
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+}
+
+.mobile-menu-nav a:hover,
+.mobile-menu-nav a:focus-visible { color: var(--muted-light); }
+
+.mobile-menu-nav a:focus-visible {
+    outline: 1px solid var(--paper);
+    outline-offset: 4px;
+}
+
+.mobile-menu-sign {
+    position: absolute;
+    bottom: 2.4rem;
+    font-family: "Mrs Saint Delafield", cursive;
+    font-size: 2.2rem;
+    color: var(--muted-light);
+}
+
+.mobile-menu-close {
+    position: absolute;
+    top: 1.6rem;
+    right: clamp(1.5rem, 4vw, 3.5rem);
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.mobile-menu-close span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 1.5px;
+    background: var(--paper);
+}
+
+.mobile-menu-close span:first-child { transform: translate(-50%, -50%) rotate(45deg); }
+.mobile-menu-close span:last-child { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.mobile-menu-close:focus-visible {
+    outline: 1px solid var(--paper);
+    outline-offset: 4px;
+}
+
+/* ------------------------------------------------------------------
    Responsive & motion preferences
 ------------------------------------------------------------------ */
 
+/* tablet & mobile: hamburger replaces the inline nav */
+@media (max-width: 1024px) {
+    .hero-nav { display: none; }
+    .menu-toggle { display: flex; }
+}
+
 @media (max-width: 640px) {
-    .hero-nav { gap: 1.1rem; }
+    /* message section sizing for small screens */
+    .message-photo { width: 80vw; }
+    .message-row-a { font-size: 2.5rem; }
+    .message-row-b { font-size: 2.7rem; }
+    .message-signature { font-size: 3.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
