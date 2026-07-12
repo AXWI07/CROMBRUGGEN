@@ -123,6 +123,70 @@
     requestAnimationFrame(messageFrame);
 
     /* --------------------------------------------------------------
+       2b. About section: word-by-word reveal on scroll
+    -------------------------------------------------------------- */
+
+    var aboutTrack = document.getElementById('about-track');
+    var aboutText = document.getElementById('about-text');
+
+    // wrap every word in a span, keeping accent styling intact
+    var aboutWords = [];
+    Array.prototype.slice.call(aboutText.childNodes).forEach(function (node) {
+        var isAccent = node.nodeType === 1 && node.classList.contains('about-accent');
+        var text = node.textContent;
+        var frag = document.createDocumentFragment();
+        text.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) {
+                frag.appendChild(document.createTextNode(part));
+            } else {
+                var span = document.createElement('span');
+                span.className = 'about-word' + (isAccent ? ' about-accent' : '');
+                span.textContent = part;
+                frag.appendChild(span);
+                aboutWords.push(span);
+            }
+        });
+        aboutText.replaceChild(frag, node);
+    });
+
+    var aboutP = 0;
+
+    function aboutFrame() {
+        requestAnimationFrame(aboutFrame);
+        var rect = aboutTrack.getBoundingClientRect();
+        var total = aboutTrack.offsetHeight - window.innerHeight;
+        var target = total > 0 ? clamp01(-rect.top / total) : 0;
+
+        aboutP += (target - aboutP) * 0.1;
+        if (Math.abs(target - aboutP) < 0.0005) aboutP = target;
+
+        var n = aboutWords.length;
+        for (var i = 0; i < n; i++) {
+            var w = clamp01(aboutP * (n + 3) - i);
+            aboutWords[i].style.opacity = (0.12 + 0.88 * w).toFixed(3);
+        }
+    }
+    requestAnimationFrame(aboutFrame);
+
+    /* --------------------------------------------------------------
+       2c. Contact form: opens the visitor's mail client, prefilled
+    -------------------------------------------------------------- */
+
+    var contactForm = document.getElementById('contact-form');
+    contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var naam = contactForm.naam.value.trim();
+        var email = contactForm.email.value.trim();
+        var bericht = contactForm.bericht.value.trim();
+        var subject = 'Contact via crombruggen — ' + naam;
+        var body = bericht + '\n\n— ' + naam + ' (' + email + ')';
+        window.location.href = 'mailto:axelwillockx@gmail.com'
+            + '?subject=' + encodeURIComponent(subject)
+            + '&body=' + encodeURIComponent(body);
+    });
+
+    /* --------------------------------------------------------------
        3. WebGL mask-distortion hero
     -------------------------------------------------------------- */
 

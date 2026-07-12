@@ -71,6 +71,45 @@
         </div>
     </section>
 
+    <!-- About: statement text, revealed word by word on scroll -->
+    <section class="about" id="over" aria-label="Over Crombruggen">
+        <div class="about-track" id="about-track">
+            <div class="about-sticky">
+                <p class="about-text" id="about-text">Crombruggen is <span class="about-accent">fotograaf</span> en <span class="about-accent">videograaf</span>. Momenten vastleggen zoals ze zijn &mdash; echt en ongefilterd. Van portret tot reportage: beelden met een eigen <span class="about-accent">signatuur</span>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer with contact form -->
+    <footer class="footer" id="contact" aria-label="Contact">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <p class="footer-sign" aria-hidden="true">Crombruggen</p>
+                <p class="footer-tag">Fotografie &amp; videografie</p>
+                <a class="footer-link" href="https://crombruggen.pixieset.com">Bekijk werk</a>
+                <p class="footer-copy">&copy; 2026 Crombruggen</p>
+            </div>
+            <div class="footer-right">
+                <h2 class="footer-form-title">Contact</h2>
+                <form class="contact-form" id="contact-form">
+                    <div class="form-field">
+                        <label for="cf-naam">Naam</label>
+                        <input type="text" id="cf-naam" name="naam" autocomplete="name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="cf-email">E-mail</label>
+                        <input type="email" id="cf-email" name="email" autocomplete="email" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="cf-bericht">Bericht</label>
+                        <textarea id="cf-bericht" name="bericht" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Verstuur</button>
+                </form>
+            </div>
+        </div>
+    </footer>
+
     <!-- Mobile / tablet menu overlay -->
     <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
         <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Menu sluiten">

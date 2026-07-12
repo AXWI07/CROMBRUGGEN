@@ -351,6 +351,181 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
+   About — statement text, words brighten one by one on scroll
+------------------------------------------------------------------ */
+
+.about-track { height: 240vh; }
+
+.about-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: var(--ink);
+}
+
+.about-text {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 5vw, 4.5rem);
+    line-height: 1.12;
+    text-transform: uppercase;
+    text-align: center;
+    max-width: min(90vw, 1100px);
+    color: var(--paper);
+}
+
+.about-text .about-accent { color: #8f8a6f; }
+
+.about-word {
+    opacity: 0.12;
+    will-change: opacity;
+}
+
+/* ------------------------------------------------------------------
+   Footer — signature left, contact form right
+------------------------------------------------------------------ */
+
+.footer {
+    background: var(--ink);
+    color: var(--paper);
+    border-top: 1px solid rgba(242, 239, 233, 0.14);
+}
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 8vw, 8rem);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(4rem, 9vh, 7rem) clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+}
+
+.footer-sign {
+    font-family: "Mrs Saint Delafield", cursive;
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    line-height: 1;
+    color: var(--paper);
+}
+
+.footer-tag {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted-light);
+}
+
+.footer-link {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--paper);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(242, 239, 233, 0.3);
+    padding-bottom: 0.3rem;
+    transition: border-color 200ms ease;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible { border-color: var(--paper); }
+
+.footer-copy {
+    margin-top: auto;
+    padding-top: 2.5rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted-light);
+}
+
+/* Contact form */
+
+.footer-form-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2.2rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.form-field label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted-light);
+}
+
+.form-field input,
+.form-field textarea {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(242, 239, 233, 0.3);
+    padding: 0.55rem 0;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--paper);
+    border-radius: 0;
+    resize: vertical;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-bottom-color: var(--paper);
+}
+
+.form-submit {
+    align-self: flex-start;
+    margin-top: 0.4rem;
+    padding: 0.9rem 2.4rem;
+    background: transparent;
+    border: 1px solid var(--paper);
+    color: var(--paper);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    transition: background 200ms ease, color 200ms ease;
+}
+
+.form-submit:hover,
+.form-submit:focus-visible {
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.form-submit:focus-visible {
+    outline: 1px solid var(--paper);
+    outline-offset: 4px;
+}
+
+/* ------------------------------------------------------------------
    Mobile / tablet menu overlay
 ------------------------------------------------------------------ */
 
@@ -454,6 +629,10 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     .message-row-a { font-size: 2.5rem; }
     .message-row-b { font-size: 2.7rem; }
     .message-signature { font-size: 3.4rem; }
+
+    /* footer stacks on small screens */
+    .footer-inner { grid-template-columns: 1fr; gap: 3.5rem; }
+    .footer-copy { padding-top: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
