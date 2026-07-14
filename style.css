@@ -391,9 +391,13 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 ------------------------------------------------------------------ */
 
 .footer {
-    background: var(--ink);
-    color: var(--paper);
-    border-top: 1px solid rgba(242, 239, 233, 0.14);
+    position: relative;
+    z-index: 5;
+    /* slides up over the tail of the pinned about section */
+    margin-top: -34vh;
+    background: #8f8a6f;
+    color: var(--ink);
+    will-change: transform;
 }
 
 .footer-inner {
@@ -416,29 +420,63 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     font-family: "Mrs Saint Delafield", cursive;
     font-size: clamp(3rem, 6vw, 4.5rem);
     line-height: 1;
-    color: var(--paper);
+    color: var(--ink);
 }
 
 .footer-tag {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: var(--muted-light);
+    color: rgba(10, 10, 11, 0.72);
 }
 
 .footer-link {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: var(--paper);
+    color: var(--ink);
     text-decoration: none;
-    border-bottom: 1px solid rgba(242, 239, 233, 0.3);
+    border-bottom: 1px solid rgba(10, 10, 11, 0.35);
     padding-bottom: 0.3rem;
     transition: border-color 200ms ease;
 }
 
 .footer-link:hover,
-.footer-link:focus-visible { border-color: var(--paper); }
+.footer-link:focus-visible { border-color: var(--ink); }
+
+.footer-socials {
+    display: flex;
+    gap: 0.9rem;
+}
+
+.footer-socials a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(10, 10, 11, 0.35);
+    border-radius: 50%;
+    color: var(--ink);
+    transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.footer-socials svg {
+    width: 19px;
+    height: 19px;
+}
+
+.footer-socials a:hover,
+.footer-socials a:focus-visible {
+    background: var(--ink);
+    color: #8f8a6f;
+    border-color: var(--ink);
+}
+
+.footer-socials a:focus-visible {
+    outline: 1px solid var(--ink);
+    outline-offset: 3px;
+}
 
 .footer-copy {
     margin-top: auto;
@@ -446,7 +484,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: var(--muted-light);
+    color: rgba(10, 10, 11, 0.72);
 }
 
 /* Contact form */
@@ -458,6 +496,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 2.2rem;
+    color: var(--ink);
 }
 
 .contact-form {
@@ -476,19 +515,19 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: var(--muted-light);
+    color: rgba(10, 10, 11, 0.72);
 }
 
 .form-field input,
 .form-field textarea {
     background: transparent;
     border: 0;
-    border-bottom: 1px solid rgba(242, 239, 233, 0.3);
+    border-bottom: 1px solid rgba(10, 10, 11, 0.35);
     padding: 0.55rem 0;
     font-family: var(--font-sans);
     font-weight: 300;
     font-size: 1rem;
-    color: var(--paper);
+    color: var(--ink);
     border-radius: 0;
     resize: vertical;
 }
@@ -496,7 +535,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .form-field input:focus,
 .form-field textarea:focus {
     outline: none;
-    border-bottom-color: var(--paper);
+    border-bottom-color: var(--ink);
 }
 
 .form-submit {
@@ -504,8 +543,8 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     margin-top: 0.4rem;
     padding: 0.9rem 2.4rem;
     background: transparent;
-    border: 1px solid var(--paper);
-    color: var(--paper);
+    border: 1px solid var(--ink);
+    color: var(--ink);
     font-family: var(--font-sans);
     font-size: 0.72rem;
     text-transform: uppercase;
@@ -516,12 +555,12 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 .form-submit:hover,
 .form-submit:focus-visible {
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--ink);
+    color: #8f8a6f;
 }
 
 .form-submit:focus-visible {
-    outline: 1px solid var(--paper);
+    outline: 1px solid var(--ink);
     outline-offset: 4px;
 }
 

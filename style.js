@@ -161,13 +161,35 @@
         aboutP += (target - aboutP) * 0.1;
         if (Math.abs(target - aboutP) < 0.0005) aboutP = target;
 
+        // finish the reveal at ~70% of the track, before the footer overlaps
+        var pw = clamp01(aboutP / 0.7);
         var n = aboutWords.length;
         for (var i = 0; i < n; i++) {
-            var w = clamp01(aboutP * (n + 3) - i);
+            var w = clamp01(pw * (n + 3) - i);
             aboutWords[i].style.opacity = (0.12 + 0.88 * w).toFixed(3);
         }
     }
     requestAnimationFrame(aboutFrame);
+
+    /* --------------------------------------------------------------
+       2b-2. Footer: slides up over the about section
+    -------------------------------------------------------------- */
+
+    var footerEl = document.querySelector('.footer');
+    var footerP = 0;
+
+    function footerFrame() {
+        requestAnimationFrame(footerFrame);
+        // layout position, unaffected by the transform itself
+        var top = footerEl.offsetTop - window.scrollY;
+        var vh = window.innerHeight;
+        var target = clamp01((vh - top) / Math.min(vh * 0.8, footerEl.offsetHeight));
+        footerP += (target - footerP) * 0.1;
+        if (Math.abs(target - footerP) < 0.0005) footerP = target;
+        var y = (1 - easeOut(footerP)) * 12; // vh
+        footerEl.style.transform = 'translate3d(0, ' + y.toFixed(3) + 'vh, 0)';
+    }
+    requestAnimationFrame(footerFrame);
 
     /* --------------------------------------------------------------
        2c. Contact form: opens the visitor's mail client, prefilled
