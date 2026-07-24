@@ -253,7 +253,9 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
    signature writes itself over the top
 ------------------------------------------------------------------ */
 
-.message-track { height: 280vh; }
+/* ink background on the track (not just the sticky) so a mobile URL-bar
+   collapse can never reveal the white body behind the section */
+.message-track { height: 280vh; background: var(--ink); }
 
 .message-sticky {
     position: sticky;
@@ -354,7 +356,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
    About — statement text, words brighten one by one on scroll
 ------------------------------------------------------------------ */
 
-.about-track { height: 240vh; }
+.about-track { height: 240vh; background: var(--ink); }
 
 .about-sticky {
     position: sticky;
@@ -693,18 +695,49 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 @media (max-width: 1024px) {
     .hero-nav { display: none; }
     .menu-toggle { display: flex; }
+
+    /* message section: photo in the upper area, type rows stacked UNDERNEATH
+       it (instead of behind), so both the picture and the text stay visible */
+    .message-photo {
+        top: 40%;
+        width: min(58vw, 440px);
+    }
+
+    /* signature writes over the photo; dropped so its top isn't clipped */
+    .message-signature {
+        top: 44%;
+    }
+
+    /* rows sit in the lower band, still sliding as a marquee */
+    .message-rows {
+        inset: 64% 0 0 0;
+        justify-content: flex-start;
+        gap: 0.3rem;
+    }
 }
 
 @media (max-width: 640px) {
     /* message section sizing for small screens */
-    .message-photo { width: 80vw; }
-    .message-row-a { font-size: 2.5rem; }
-    .message-row-b { font-size: 2.7rem; }
-    .message-signature { font-size: 3.4rem; }
+    .message-photo { width: 68vw; }
+    .message-row-a { font-size: 2.3rem; }
+    .message-row-b { font-size: 2.5rem; }
+    .message-signature { font-size: 5.2rem; }
 
-    /* footer stacks on small screens */
-    .footer-inner { grid-template-columns: 1fr; gap: 3.5rem; }
-    .footer-copy { padding-top: 1rem; }
+    /* footer stacks and stays compact enough to fit the viewport, so the
+       "Crombruggen" signature at the top never scrolls off when you reach
+       the bottom of the page */
+    .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding-top: 3rem;
+        padding-bottom: 2.4rem;
+    }
+    .footer-left { gap: 0.7rem; }
+    .footer-sign { font-size: 3rem; }
+    .footer-copy { padding-top: 0.8rem; }
+    .footer-form-title { margin-bottom: 1.3rem; }
+    .contact-form { gap: 1.1rem; }
+    .footer-bottom { padding-top: 1.1rem; padding-bottom: 1.1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

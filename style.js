@@ -122,9 +122,31 @@
     function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
     var msgP = 0;
+    var mA = 0, mB = 0, msgLast = 0;
 
-    function messageFrame() {
+    function mod(x, u) { return ((x % u) + u) % u; }
+
+    // build a seamless marquee: repeat the phrase past 2x the viewport, then
+    // duplicate so the two halves are identical — loop unit = scrollWidth / 2
+    function buildMarquee(el) {
+        var phrase = el.getAttribute('data-phrase') || '';
+        el.textContent = phrase;
+        var one = el.scrollWidth || 1;
+        var reps = Math.ceil((window.innerWidth * 2) / one) + 2;
+        var half = new Array(reps + 1).join(phrase);
+        el.textContent = half + half;
+        el.__unit = (el.scrollWidth / 2) || 1;
+    }
+    function buildAllMarquees() { buildMarquee(msgRowA); buildMarquee(msgRowB); }
+    buildAllMarquees();
+    window.addEventListener('resize', buildAllMarquees);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildAllMarquees);
+
+    function messageFrame(now) {
         requestAnimationFrame(messageFrame);
+        if (!msgLast) msgLast = now;
+        var dt = Math.min(now - msgLast, 50); msgLast = now;
+
         var rect = msgTrack.getBoundingClientRect();
         var total = msgTrack.offsetHeight - window.innerHeight;
         var target = total > 0 ? clamp01(-rect.top / total) : 0;
@@ -133,16 +155,21 @@
         msgP += (target - msgP) * 0.09;
         if (Math.abs(target - msgP) < 0.0005) msgP = target;
 
-        // type rows slide in opposite directions
-        msgRowA.style.transform = 'translate3d(' + (-6 - 16 * msgP) + '%, 0, 0)';
-        msgRowB.style.transform = 'translate3d(' + (-24 + 16 * msgP) + '%, 0, 0)';
+        // continuous drift keeps the rows moving after the scroll settles;
+        // the scroll position adds a phase shift so they slide apart as you go
+        mA += 0.026 * dt;
+        mB += 0.030 * dt;
+        var uA = msgRowA.__unit, uB = msgRowB.__unit;
+        var tA = -mod(mA + msgP * 0.45 * uA, uA);        // drifts left
+        var tB =  mod(mB + msgP * 0.45 * uB, uB) - uB;   // drifts right
+        msgRowA.style.transform = 'translate3d(' + tA.toFixed(2) + 'px, 0, 0)';
+        msgRowB.style.transform = 'translate3d(' + tB.toFixed(2) + 'px, 0, 0)';
 
-        // photo settles from large to card size; on mobile it shrinks further
-        // so the sliding type behind it stays visible at the end
+        // photo settles from large to card size (same on every screen; on
+        // mobile/tablet the type rows sit under the photo, not behind it)
         var settle = easeOut(clamp01(msgP / 0.55));
-        var endScale = window.innerWidth <= 640 ? 0.58 : 1.0;
         msgPhoto.style.transform =
-            'translate(-50%, -50%) scale(' + (1.45 - (1.45 - endScale) * settle) + ')';
+            'translate(-50%, -50%) scale(' + (1.45 - 0.45 * settle) + ')';
 
         // signature writes itself left-to-right
         var sig = clamp01((msgP - 0.3) / 0.55);
