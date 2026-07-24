@@ -393,8 +393,8 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .footer {
     position: relative;
     z-index: 5;
-    /* slides up over the tail of the pinned about section */
-    margin-top: -34vh;
+    /* slides up over most of the pinned about section */
+    margin-top: -75vh;
     background: #8f8a6f;
     color: var(--ink);
     will-change: transform;
@@ -486,6 +486,39 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     letter-spacing: 0.22em;
     color: rgba(10, 10, 11, 0.72);
 }
+
+/* bottom bar: designed-by credit + privacy link */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.6rem clamp(1.5rem, 4vw, 3.5rem);
+    border-top: 1px solid rgba(10, 10, 11, 0.2);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(10, 10, 11, 0.72);
+}
+
+.footer-credit a,
+.footer-privacy {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(10, 10, 11, 0.35);
+    padding-bottom: 0.15rem;
+    transition: border-color 200ms ease;
+}
+
+.footer-privacy { color: var(--ink); }
+
+.footer-credit a:hover,
+.footer-credit a:focus-visible,
+.footer-privacy:hover,
+.footer-privacy:focus-visible { border-color: var(--ink); }
 
 /* Contact form */
 

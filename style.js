@@ -41,9 +41,37 @@
             } else {
                 shutter.parentNode.removeChild(shutter);
                 document.body.classList.remove('is-locked');
+                initSmoothScroll();
             }
         }
         requestAnimationFrame(step);
+    }
+
+    /* Lenis smooth scrolling — turns every notched wheel step into a ~1.2s
+       eased glide, the same recipe as the portfolio. This is what makes the
+       scroll-scrubbed sections (message / about / footer) feel high-end.
+       Started only after the intro, and only at desktop widths (wheel input);
+       touch gestures stay native, so phones/tablets are unaffected. */
+    function initSmoothScroll() {
+        if (window.innerWidth < 1025 || typeof Lenis === 'undefined') return;
+        document.documentElement.style.scrollBehavior = 'auto';
+        var lenis = new Lenis({
+            duration: 1.2,
+            easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+            smoothWheel: true,
+            wheelMultiplier: 1
+        });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        // let same-page anchors glide through Lenis instead of jumping
+        document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+            a.addEventListener('click', function (e) {
+                var href = a.getAttribute('href');
+                if (href.length < 2) return;
+                var target = document.querySelector(href);
+                if (target) { e.preventDefault(); lenis.scrollTo(target, { duration: 1.4 }); }
+            });
+        });
     }
 
     window.addEventListener('wheel', playIntro, { passive: true, once: false });
@@ -109,10 +137,12 @@
         msgRowA.style.transform = 'translate3d(' + (-6 - 16 * msgP) + '%, 0, 0)';
         msgRowB.style.transform = 'translate3d(' + (-24 + 16 * msgP) + '%, 0, 0)';
 
-        // photo settles from large to card size
+        // photo settles from large to card size; on mobile it shrinks further
+        // so the sliding type behind it stays visible at the end
         var settle = easeOut(clamp01(msgP / 0.55));
+        var endScale = window.innerWidth <= 640 ? 0.58 : 1.0;
         msgPhoto.style.transform =
-            'translate(-50%, -50%) scale(' + (1.45 - 0.45 * settle) + ')';
+            'translate(-50%, -50%) scale(' + (1.45 - (1.45 - endScale) * settle) + ')';
 
         // signature writes itself left-to-right
         var sig = clamp01((msgP - 0.3) / 0.55);
@@ -161,8 +191,8 @@
         aboutP += (target - aboutP) * 0.1;
         if (Math.abs(target - aboutP) < 0.0005) aboutP = target;
 
-        // finish the reveal at ~70% of the track, before the footer overlaps
-        var pw = clamp01(aboutP / 0.7);
+        // finish the reveal by half the track, before the footer wipes up over it
+        var pw = clamp01(aboutP / 0.5);
         var n = aboutWords.length;
         for (var i = 0; i < n; i++) {
             var w = clamp01(pw * (n + 3) - i);
@@ -184,9 +214,10 @@
         var top = footerEl.offsetTop - window.scrollY;
         var vh = window.innerHeight;
         var target = clamp01((vh - top) / Math.min(vh * 0.8, footerEl.offsetHeight));
-        footerP += (target - footerP) * 0.1;
-        if (Math.abs(target - footerP) < 0.0005) footerP = target;
-        var y = (1 - easeOut(footerP)) * 12; // vh
+        // gentle trailing catch-up (~scrub 0.8 feel) on top of Lenis' smoothed scroll
+        footerP += (target - footerP) * 0.075;
+        if (Math.abs(target - footerP) < 0.0002) footerP = target;
+        var y = (1 - easeOut(footerP)) * 16; // vh
         footerEl.style.transform = 'translate3d(0, ' + y.toFixed(3) + 'vh, 0)';
     }
     requestAnimationFrame(footerFrame);
