@@ -20,8 +20,8 @@
                 <header class="hero-header">
                     <a class="hero-brand" href="#">Crombruggen</a>
                     <nav class="hero-nav" aria-label="Hoofdnavigatie">
-                        <a href="https://crombruggen.pixieset.com">Werk</a>
                         <a href="#over">Over</a>
+                        <a href="#projecten">Projecten</a>
                         <a href="#contact">Contact</a>
                     </nav>
                     <button class="menu-toggle" id="menu-toggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
@@ -72,12 +72,53 @@
     </section>
 
     <!-- About: statement text, revealed word by word on scroll -->
-    <section class="about" id="over" aria-label="Over Crombruggen">
+    <section class="about" id="over" aria-label="Over Senne">
         <div class="about-track" id="about-track">
             <div class="about-sticky">
-                <p class="about-text" id="about-text">Crombruggen is <span class="about-accent">fotograaf</span> en <span class="about-accent">videograaf</span>. Momenten vastleggen zoals ze zijn &mdash; echt en ongefilterd. Van portret tot reportage: beelden met een eigen <span class="about-accent">signatuur</span>.</p>
+                <p class="about-text" id="about-text">Hey, ik ben <span class="about-accent">Senne</span>. Met <span class="about-accent">fotografie</span> en <span class="about-accent">video</span> leg ik échte momenten, mensen en verhalen vast. Natuurlijk, sfeervol en met een eigen karakter. Van portret tot evenement. Bekijk mijn werk en ontdek de <span class="about-accent">verhalen</span>.</p>
             </div>
         </div>
+    </section>
+
+    <!-- Projects: black→white fade, then parallax panels revealed one by one -->
+    <section class="projects" id="projecten" aria-label="Projecten">
+        <div class="projects-intro" id="projects-intro">
+            <p class="projects-kicker">Projecten</p>
+            <h2 class="projects-title">Wat ik maak</h2>
+        </div>
+
+        <article class="project" data-index="01">
+            <div class="project-media">
+                <img src="images/landscape.JPG" alt="" data-parallax>
+            </div>
+            <div class="project-info">
+                <span class="project-num">01</span>
+                <h3 class="project-name">Video editing</h3>
+                <p class="project-desc">Ritme, sfeer en verhaal — beeld en geluid samengebracht tot iets dat blijft hangen.</p>
+            </div>
+        </article>
+
+        <article class="project" data-index="02">
+            <div class="project-media">
+                <img src="images/portret.jpeg" alt="" data-parallax>
+            </div>
+            <div class="project-info">
+                <span class="project-num">02</span>
+                <h3 class="project-name">Fotografie</h3>
+                <p class="project-desc">Portret, reportage en evenement — echte momenten, natuurlijk vastgelegd.</p>
+            </div>
+        </article>
+
+        <article class="project" data-index="03">
+            <div class="project-media">
+                <img src="images/landscape.JPG" alt="" data-parallax>
+            </div>
+            <div class="project-info">
+                <span class="project-num">03</span>
+                <h3 class="project-name">Montage</h3>
+                <p class="project-desc">Van ruw materiaal tot een afgewerkt geheel, met oog voor timing en detail.</p>
+            </div>
+        </article>
     </section>
 
     <!-- Footer with contact form -->
@@ -135,8 +176,8 @@
             <span></span>
         </button>
         <nav class="mobile-menu-nav" aria-label="Mobiel menu">
-            <a href="https://crombruggen.pixieset.com">Werk</a>
             <a href="#over">Over</a>
+            <a href="#projecten">Projecten</a>
             <a href="#contact">Contact</a>
         </nav>
         <p class="mobile-menu-sign" aria-hidden="true">Crombruggen</p>

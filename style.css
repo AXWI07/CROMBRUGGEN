@@ -389,14 +389,128 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
+   Projects — black→white fade intro, then parallax panels one by one
+------------------------------------------------------------------ */
+
+.projects {
+    position: relative;
+    background: var(--paper);
+    color: var(--text);
+    /* room after the last project so the footer overlap wipes over empty
+       white space instead of covering the Montage content */
+    padding-bottom: 40vh;
+}
+
+/* intro panel: background is driven ink→paper by JS as you scroll in,
+   so the section fades from the black about-section to white */
+.projects-intro {
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--ink); /* default; JS interpolates to paper */
+    will-change: background-color;
+}
+
+.projects-kicker {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--muted-light);
+    margin-bottom: 1.4rem;
+}
+
+.projects-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(2.6rem, 8vw, 6rem);
+    line-height: 1;
+    color: var(--paper); /* JS interpolates to ink as bg turns white */
+}
+
+/* each project panel: media on one side, info on the other, alternating */
+.project {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: clamp(3rem, 8vh, 8rem) clamp(1.5rem, 5vw, 6rem);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.project:nth-child(even) .project-media { order: 2; }
+
+.project-media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: #e7e4dd;
+}
+
+.project-media img {
+    position: absolute;
+    top: -12%;
+    left: 0;
+    width: 100%;
+    height: 124%; /* taller than frame so parallax has room to travel */
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.03);
+    will-change: transform;
+}
+
+.project-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* revealed on enter by JS */
+    opacity: 0;
+    transform: translateY(28px);
+    will-change: opacity, transform;
+}
+
+.project-num {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    color: var(--olive, #8f8a6f);
+    margin-bottom: 1.4rem;
+}
+
+.project-name {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-size: clamp(2.2rem, 6vw, 4.5rem);
+    line-height: 1.02;
+    color: var(--text);
+}
+
+.project-desc {
+    margin-top: 1.4rem;
+    max-width: 34ch;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* ------------------------------------------------------------------
    Footer — signature left, contact form right
 ------------------------------------------------------------------ */
 
 .footer {
     position: relative;
     z-index: 5;
-    /* slides up over most of the pinned about section */
-    margin-top: -75vh;
+    /* slides up over the empty tail of the projects section */
+    margin-top: -30vh;
     background: #8f8a6f;
     color: var(--ink);
     will-change: transform;
@@ -714,6 +828,17 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
         justify-content: flex-start;
         gap: 0.3rem;
     }
+
+    /* projects stack: media on top, info below */
+    .project {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+        min-height: auto;
+        padding: 12vh clamp(1.5rem, 6vw, 3rem);
+        align-content: center;
+    }
+    .project:nth-child(even) .project-media { order: 0; }
+    .project-media { aspect-ratio: 3 / 2; }
 }
 
 @media (max-width: 640px) {

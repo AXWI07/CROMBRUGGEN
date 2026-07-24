@@ -229,7 +229,59 @@
     requestAnimationFrame(aboutFrame);
 
     /* --------------------------------------------------------------
-       2b-2. Footer: slides up over the about section
+       2b-1. Projects: black→white fade intro, image parallax, info reveal
+    -------------------------------------------------------------- */
+
+    var projIntro = document.getElementById('projects-intro');
+    var projTitle = projIntro ? projIntro.querySelector('.projects-title') : null;
+    var projKicker = projIntro ? projIntro.querySelector('.projects-kicker') : null;
+    var parallaxImgs = Array.prototype.slice.call(document.querySelectorAll('.project-media [data-parallax]'));
+    var projInfos = Array.prototype.slice.call(document.querySelectorAll('.project-info'));
+
+    var INK = [10, 10, 11], PAPER = [251, 250, 248];
+    function mix(a, b, t) {
+        return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' +
+                        Math.round(a[1] + (b[1] - a[1]) * t) + ',' +
+                        Math.round(a[2] + (b[2] - a[2]) * t) + ')';
+    }
+
+    function projectsFrame() {
+        requestAnimationFrame(projectsFrame);
+        var vh = window.innerHeight;
+
+        // intro fade: black (continues the about section) → white, centred on
+        // the moment the intro fills the screen and eased with smoothstep so the
+        // transition reads as one smooth part of the scroll, not a late flip
+        if (projIntro) {
+            var ir = projIntro.getBoundingClientRect();
+            var raw = clamp01((vh * 0.62 - ir.top) / (vh * 1.24));
+            var f = raw * raw * (3 - 2 * raw); // smoothstep
+            projIntro.style.backgroundColor = mix(INK, PAPER, f);
+            if (projTitle) projTitle.style.color = mix(PAPER, INK, f);
+            if (projKicker) projKicker.style.color = mix([138, 135, 131], [122, 118, 111], f);
+        }
+
+        // image parallax: shift each image against the scroll as its panel passes
+        for (var i = 0; i < parallaxImgs.length; i++) {
+            var img = parallaxImgs[i];
+            var pr = img.parentNode.getBoundingClientRect();
+            var progress = (pr.top + pr.height / 2 - vh / 2) / vh; // -~1..+~1 across the view
+            img.style.transform = 'translate3d(0,' + (progress * -14).toFixed(2) + '%, 0)';
+        }
+
+        // info reveal: fade+rise each info block once it enters the viewport
+        for (var j = 0; j < projInfos.length; j++) {
+            var info = projInfos[j];
+            var top = info.getBoundingClientRect().top;
+            var r = clamp01((vh * 0.85 - top) / (vh * 0.35));
+            info.style.opacity = r.toFixed(3);
+            info.style.transform = 'translateY(' + ((1 - easeOut(r)) * 28).toFixed(1) + 'px)';
+        }
+    }
+    requestAnimationFrame(projectsFrame);
+
+    /* --------------------------------------------------------------
+       2b-2. Footer: slides up over the projects section
     -------------------------------------------------------------- */
 
     var footerEl = document.querySelector('.footer');
