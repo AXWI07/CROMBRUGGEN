@@ -40,18 +40,16 @@
 
             </section>
 
-            <!-- Begin screen: splits in two on scroll (top slides up, bottom slides down) -->
-            <div class="shutter" id="shutter" aria-hidden="true">
-                <div class="shutter-half shutter-top">
-                    <img src="images/screen-crop.png" alt="">
-                </div>
-                <div class="shutter-half shutter-bottom">
-                    <img src="images/screen-crop.png" alt="">
-                </div>
-                
-            </div>
-
         </div>
+    </div>
+
+    <!-- Loading screen: black, "Crombruggen" writes itself; slides up on scroll -->
+    <div class="loader" id="loader">
+        <span class="loader-word">Crombruggen</span>
+        <span class="loader-hint">
+            <span class="loader-hint-label">Scroll</span>
+            <span class="loader-hint-line"></span>
+        </span>
     </div>
 
     <!-- Scroll section: type rows slide apart, photo card settles, signature writes itself -->
@@ -80,45 +78,50 @@
         </div>
     </section>
 
-    <!-- Projects: black→white fade, then parallax panels revealed one by one -->
+    <!-- Black spacer: extra breathing room between about and projecten -->
+    <div class="section-gap" aria-hidden="true"></div>
+
+    <!-- Projects: horizontal scroll with a black→white fade on entry -->
     <section class="projects" id="projecten" aria-label="Projecten">
-        <div class="projects-intro" id="projects-intro">
-            <p class="projects-kicker">Projecten</p>
-            <h2 class="projects-title">Wat ik maak</h2>
+        <div class="projects-hscroll" id="projects-hscroll">
+            <div class="projects-sticky" id="projects-sticky">
+                <span class="projects-hlabel">Projecten</span>
+                <div class="projects-track" id="projects-track">
+
+                    <article class="hpanel">
+                        <div class="hpanel-media"><img src="images/landscape.JPG" alt="" data-parallax></div>
+                        <div class="hpanel-info">
+                            <span class="hpanel-num">01</span>
+                            <h3 class="hpanel-name">Video producties</h3>
+                            <p class="hpanel-desc">Ritme, sfeer en verhaal — beeld en geluid samengebracht tot iets dat blijft hangen.</p>
+                            <a class="hpanel-link" href="projecten-video.html">Bekijk projecten</a>
+                        </div>
+                    </article>
+
+                    <article class="hpanel">
+                        <div class="hpanel-media"><img src="images/portret.jpeg" alt="" data-parallax></div>
+                        <div class="hpanel-info">
+                            <span class="hpanel-num">02</span>
+                            <h3 class="hpanel-name">Fotografie</h3>
+                            <p class="hpanel-desc">Portret, reportage en evenement — echte momenten, natuurlijk vastgelegd.</p>
+                            <a class="hpanel-link" href="projecten-fotografie.html">Bekijk projecten</a>
+                        </div>
+                    </article>
+
+                    <article class="hpanel">
+                        <div class="hpanel-media"><img src="images/landscape.JPG" alt="" data-parallax></div>
+                        <div class="hpanel-info">
+                            <span class="hpanel-num">03</span>
+                            <h3 class="hpanel-name">Social media</h3>
+                            <p class="hpanel-desc">Van ruw materiaal tot een afgewerkt geheel, met oog voor timing en detail.</p>
+                            <a class="hpanel-link" href="projecten-social.html">Bekijk projecten</a>
+                        </div>
+                    </article>
+
+                </div>
+                <div class="projects-progress"><span id="projects-bar"></span></div>
+            </div>
         </div>
-
-        <article class="project" data-index="01">
-            <div class="project-media">
-                <img src="images/landscape.JPG" alt="" data-parallax>
-            </div>
-            <div class="project-info">
-                <span class="project-num">01</span>
-                <h3 class="project-name">Video editing</h3>
-                <p class="project-desc">Ritme, sfeer en verhaal — beeld en geluid samengebracht tot iets dat blijft hangen.</p>
-            </div>
-        </article>
-
-        <article class="project" data-index="02">
-            <div class="project-media">
-                <img src="images/portret.jpeg" alt="" data-parallax>
-            </div>
-            <div class="project-info">
-                <span class="project-num">02</span>
-                <h3 class="project-name">Fotografie</h3>
-                <p class="project-desc">Portret, reportage en evenement — echte momenten, natuurlijk vastgelegd.</p>
-            </div>
-        </article>
-
-        <article class="project" data-index="03">
-            <div class="project-media">
-                <img src="images/landscape.JPG" alt="" data-parallax>
-            </div>
-            <div class="project-info">
-                <span class="project-num">03</span>
-                <h3 class="project-name">Montage</h3>
-                <p class="project-desc">Van ruw materiaal tot een afgewerkt geheel, met oog voor timing en detail.</p>
-            </div>
-        </article>
     </section>
 
     <!-- Footer with contact form -->
@@ -160,6 +163,7 @@
                         <textarea id="cf-bericht" name="bericht" rows="4" required></textarea>
                     </div>
                     <button type="submit" class="form-submit">Verstuur</button>
+                    <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
                 </form>
             </div>
         </div>

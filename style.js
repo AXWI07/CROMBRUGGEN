@@ -12,39 +12,52 @@
        which then plays out on its own (time-based, eased).
     -------------------------------------------------------------- */
 
-    var shutter = document.getElementById('shutter');
-    var introProgress = 0;   // 0..1, also drives the blob reveal
+    var loader = document.getElementById('loader');
+    var introProgress = 0;   // 0..1, also drives the hero blob reveal
     var introStarted = false;
 
-    // no page scrolling while the begin screen is up
+    // no page scrolling while the loading screen is up
     document.body.classList.add('is-locked');
 
-    var INTRO_DURATION = 2200; // ms
+    // type the brand name out letter by letter
+    (function typeLoader() {
+        var el = loader && loader.querySelector('.loader-word');
+        if (!el) return;
+        var full = (el.textContent || 'Crombruggen').trim();
+        el.textContent = '';
+        var i = 0;
+        (function tick() {
+            el.textContent = full.slice(0, i);
+            if (i < full.length) { i++; setTimeout(tick, 135); }
+            else { el.classList.add('done'); }
+        })();
+    })();
 
-    // very soft start and landing
-    function easeInOutQuint(t) {
-        return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+    // ease the hero blob in once the loader lifts away
+    function revealHero() {
+        var t0 = performance.now();
+        (function grow(now) {
+            introProgress = Math.min((now - t0) / 1400, 1);
+            if (introProgress < 1) requestAnimationFrame(grow);
+        })(t0);
     }
 
+    // first scroll gesture lifts the loading screen up to reveal the hero;
+    // the page stays locked until the loader is fully gone, so scrolling on
+    // the loading screen can never scroll the hero page underneath
     function playIntro() {
         if (introStarted) return;
         introStarted = true;
-        var t0 = performance.now();
-
-        function step(now) {
-            var p = Math.min((now - t0) / INTRO_DURATION, 1);
-            var e = easeInOutQuint(p);
-            shutter.style.setProperty('--split', e.toFixed(4));
-            introProgress = e;
-            if (p < 1) {
-                requestAnimationFrame(step);
-            } else {
-                shutter.parentNode.removeChild(shutter);
-                document.body.classList.remove('is-locked');
-                initSmoothScroll();
-            }
-        }
-        requestAnimationFrame(step);
+        loader.classList.add('is-up');
+        revealHero();
+        var done = function (e) {
+            if (e && e.target !== loader) return; // ignore bubbled child transitions
+            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+            document.body.classList.remove('is-locked');
+            initSmoothScroll();
+        };
+        loader.addEventListener('transitionend', done);
+        setTimeout(done, 1300); // fallback if transitionend doesn't fire
     }
 
     /* Lenis smooth scrolling — turns every notched wheel step into a ~1.2s
@@ -81,6 +94,33 @@
             playIntro();
         }
     });
+
+    /* Arriving via an in-page anchor (e.g. "← Projecten" back from a project
+       page loads index.html#projecten): skip the begin screen entirely and
+       land straight on that section instead of the intro. */
+    function skipIntroTo(hash) {
+        introStarted = true;
+        introProgress = 1;
+        if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+        document.body.classList.remove('is-locked');
+        initSmoothScroll();
+        var jump = function () {
+            var el = document.querySelector(hash);
+            if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY);
+        };
+        // wait for the tall sections to lay out, then jump to the target
+        requestAnimationFrame(function () { requestAnimationFrame(jump); });
+        window.addEventListener('load', jump);
+    }
+
+    (function () {
+        var h = window.location.hash;
+        if (h && h.length > 1) {
+            try {
+                if (document.querySelector(h)) skipIntroTo(h);
+            } catch (err) { /* invalid selector — ignore */ }
+        }
+    })();
 
     /* --------------------------------------------------------------
        1b. Mobile / tablet menu
@@ -229,53 +269,57 @@
     requestAnimationFrame(aboutFrame);
 
     /* --------------------------------------------------------------
-       2b-1. Projects: black→white fade intro, image parallax, info reveal
+       2b-1. Projects: horizontal scroll with a black→white fade on entry
     -------------------------------------------------------------- */
 
-    var projIntro = document.getElementById('projects-intro');
-    var projTitle = projIntro ? projIntro.querySelector('.projects-title') : null;
-    var projKicker = projIntro ? projIntro.querySelector('.projects-kicker') : null;
-    var parallaxImgs = Array.prototype.slice.call(document.querySelectorAll('.project-media [data-parallax]'));
-    var projInfos = Array.prototype.slice.call(document.querySelectorAll('.project-info'));
+    var projHscroll = document.getElementById('projects-hscroll');
+    var projSticky = document.getElementById('projects-sticky');
+    var projTrack = document.getElementById('projects-track');
+    var projBar = document.getElementById('projects-bar');
+    var projParallax = Array.prototype.slice.call(document.querySelectorAll('.hpanel-media [data-parallax]'));
 
     var INK = [10, 10, 11], PAPER = [251, 250, 248];
+    var P_TEXT = [19, 18, 17], P_LIGHT = [251, 250, 248];
+    var P_MUTED = [122, 118, 111], P_MUTEDL = [138, 135, 131];
     function mix(a, b, t) {
         return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' +
                         Math.round(a[1] + (b[1] - a[1]) * t) + ',' +
                         Math.round(a[2] + (b[2] - a[2]) * t) + ')';
     }
 
+    var projCur = 0; // smoothed horizontal progress 0..1
+
     function projectsFrame() {
         requestAnimationFrame(projectsFrame);
-        var vh = window.innerHeight;
+        if (!projHscroll) return;
+        var vw = window.innerWidth, vh = window.innerHeight;
 
-        // intro fade: black (continues the about section) → white, centred on
-        // the moment the intro fills the screen and eased with smoothstep so the
-        // transition reads as one smooth part of the scroll, not a late flip
-        if (projIntro) {
-            var ir = projIntro.getBoundingClientRect();
-            var raw = clamp01((vh * 0.62 - ir.top) / (vh * 1.24));
-            var f = raw * raw * (3 - 2 * raw); // smoothstep
-            projIntro.style.backgroundColor = mix(INK, PAPER, f);
-            if (projTitle) projTitle.style.color = mix(PAPER, INK, f);
-            if (projKicker) projKicker.style.color = mix([138, 135, 131], [122, 118, 111], f);
-        }
+        var rect = projHscroll.getBoundingClientRect();
+        var total = projHscroll.offsetHeight - vh;
+        var target = total > 0 ? clamp01(-rect.top / total) : 0;
 
-        // image parallax: shift each image against the scroll as its panel passes
-        for (var i = 0; i < parallaxImgs.length; i++) {
-            var img = parallaxImgs[i];
-            var pr = img.parentNode.getBoundingClientRect();
-            var progress = (pr.top + pr.height / 2 - vh / 2) / vh; // -~1..+~1 across the view
-            img.style.transform = 'translate3d(0,' + (progress * -14).toFixed(2) + '%, 0)';
-        }
+        // inertia so the horizontal motion glides instead of stepping
+        projCur += (target - projCur) * 0.09;
+        if (Math.abs(target - projCur) < 0.0004) projCur = target;
 
-        // info reveal: fade+rise each info block once it enters the viewport
-        for (var j = 0; j < projInfos.length; j++) {
-            var info = projInfos[j];
-            var top = info.getBoundingClientRect().top;
-            var r = clamp01((vh * 0.85 - top) / (vh * 0.35));
-            info.style.opacity = r.toFixed(3);
-            info.style.transform = 'translateY(' + ((1 - easeOut(r)) * 28).toFixed(1) + 'px)';
+        // translate the track horizontally across its overflow
+        var maxX = projTrack.scrollWidth - vw;
+        projTrack.style.transform = 'translate3d(' + (-projCur * maxX).toFixed(2) + 'px, 0, 0)';
+        if (projBar) projBar.style.transform = 'scaleX(' + projCur.toFixed(4) + ')';
+
+        // black → white fade over the first 18% of the pin (smoothstep), so it
+        // continues the black about-section and turns white as the panels start
+        var raw = clamp01(projCur / 0.18);
+        var f = raw * raw * (3 - 2 * raw);
+        projSticky.style.backgroundColor = mix(INK, PAPER, f);
+        projSticky.style.setProperty('--panel-text', mix(P_LIGHT, P_TEXT, f));
+        projSticky.style.setProperty('--panel-muted', mix(P_MUTEDL, P_MUTED, f));
+
+        // gentle parallax inside each panel image
+        for (var i = 0; i < projParallax.length; i++) {
+            var pr = projParallax[i].parentNode.getBoundingClientRect();
+            var prog = (pr.left + pr.width / 2 - vw / 2) / vw;
+            projParallax[i].style.transform = 'translate3d(' + (prog * -6).toFixed(2) + '%, 0, 0)';
         }
     }
     requestAnimationFrame(projectsFrame);
@@ -292,30 +336,69 @@
         // layout position, unaffected by the transform itself
         var top = footerEl.offsetTop - window.scrollY;
         var vh = window.innerHeight;
-        var target = clamp01((vh - top) / Math.min(vh * 0.8, footerEl.offsetHeight));
-        // gentle trailing catch-up (~scrub 0.8 feel) on top of Lenis' smoothed scroll
-        footerP += (target - footerP) * 0.075;
+        // start later (footer must be well into view) + longer range, so the
+        // overlap waits longer and rises slowly
+        var target = clamp01((vh * 0.5 - top) / (vh * 1.2));
+        // heavier trailing catch-up → smoother, more gradual glide
+        footerP += (target - footerP) * 0.045;
         if (Math.abs(target - footerP) < 0.0002) footerP = target;
-        var y = (1 - easeOut(footerP)) * 16; // vh
+        var y = (1 - easeOut(footerP)) * 20; // vh
         footerEl.style.transform = 'translate3d(0, ' + y.toFixed(3) + 'vh, 0)';
     }
     requestAnimationFrame(footerFrame);
 
     /* --------------------------------------------------------------
-       2c. Contact form: opens the visitor's mail client, prefilled
+       2c. Contact form: submits straight to Senne's inbox via FormSubmit
+       (no mail client opens). No API key needed — the very first message
+       triggers a one-time confirmation email to vancrombruggensenne@gmail.com;
+       click "Activate Form" in it once, and every submission after that is
+       delivered directly to the inbox.
     -------------------------------------------------------------- */
 
+    var CONTACT_ENDPOINT = 'https://formsubmit.co/ajax/vancrombruggensenne@gmail.com';
+
     var contactForm = document.getElementById('contact-form');
+    var formStatus = document.getElementById('form-status');
+    var formSubmit = contactForm.querySelector('.form-submit');
+
+    function setStatus(msg, kind) {
+        if (!formStatus) return;
+        formStatus.textContent = msg;
+        formStatus.className = 'form-status' + (kind ? ' is-' + kind : '');
+    }
+
     contactForm.addEventListener('submit', function (e) {
         e.preventDefault();
         var naam = contactForm.naam.value.trim();
         var email = contactForm.email.value.trim();
         var bericht = contactForm.bericht.value.trim();
-        var subject = 'Contact via crombruggen — ' + naam;
-        var body = bericht + '\n\n— ' + naam + ' (' + email + ')';
-        window.location.href = 'mailto:axelwillockx@gmail.com'
-            + '?subject=' + encodeURIComponent(subject)
-            + '&body=' + encodeURIComponent(body);
+
+        setStatus('Versturen…', 'sending');
+        formSubmit.disabled = true;
+
+        fetch(CONTACT_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                name: naam,
+                email: email,
+                message: bericht,
+                _subject: 'Contact via crombruggen — ' + naam,
+                _template: 'table',
+                _captcha: 'false'
+            })
+        }).then(function (r) { return r.json(); }).then(function (data) {
+            if (data && (data.success === 'true' || data.success === true)) {
+                setStatus('Bedankt! Je bericht is verzonden.', 'ok');
+                contactForm.reset();
+            } else {
+                setStatus('Er ging iets mis. Probeer het later opnieuw.', 'err');
+            }
+        }).catch(function () {
+            setStatus('Er ging iets mis. Probeer het later opnieuw.', 'err');
+        }).then(function () {
+            formSubmit.disabled = false;
+        });
     });
 
     /* --------------------------------------------------------------

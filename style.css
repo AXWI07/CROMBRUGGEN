@@ -171,70 +171,74 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
-   Shutter — the begin screen; splits in two halves on scroll
+   Loading screen — black; "Crombruggen" writes itself, slides up on scroll
 ------------------------------------------------------------------ */
 
-.shutter {
-    position: absolute;
+.loader {
+    position: fixed;
     inset: 0;
-    z-index: 10;
-    /* driven by JS: 0 = closed, 1 = fully open */
-    --split: 0;
-}
-
-.shutter-half {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    overflow: hidden;
+    z-index: 200;
     background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     will-change: transform;
+    transition: transform 1.05s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-.shutter-top {
-    top: 0;
-    transform: translateY(calc(var(--split) * -100.5%));
+.loader.is-up { transform: translateY(-100%); }
+
+.loader-word {
+    font-family: "Mrs Saint Delafield", cursive;
+    color: var(--paper);
+    font-size: clamp(4rem, 15vw, 13rem);
+    line-height: 1.35;          /* room for the tall C flourish so it isn't clipped */
+    padding-top: 0.12em;
+    white-space: nowrap;
+    min-height: 1.35em;         /* stable height while the letters type in */
 }
 
-.shutter-bottom {
-    bottom: 0;
-    transform: translateY(calc(var(--split) * 100.5%));
+/* typewriter caret */
+.loader-word::after {
+    content: "";
+    display: inline-block;
+    width: 0.03em;
+    height: 0.58em;
+    margin-left: 0.04em;
+    background: var(--paper);
+    vertical-align: -0.04em;
+    animation: caret-blink 0.72s steps(1) infinite;
 }
+.loader-word.done::after { opacity: 0; animation: none; }
 
-/* each half shows its own part of the full-viewport image */
-.shutter-half img {
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+.loader-hint {
     position: absolute;
-    left: 0;
-    width: 100%;
-    height: 200%;
-    object-fit: cover;
-}
-
-.shutter-top img { top: 0; }
-.shutter-bottom img { bottom: 0; }
-
-.shutter-hint {
-    position: absolute;
-    bottom: 0;
+    bottom: clamp(2rem, 6vh, 4rem);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.9rem;
-    padding-bottom: 0;
-    opacity: calc(1 - var(--split, 0) * 2.5);
+    opacity: 0;
+    animation: loader-hint-in 0.8s ease 3s forwards;
 }
 
-.shutter-hint-label {
+@keyframes loader-hint-in {
+    to { opacity: 1; }
+}
+
+.loader-hint-label {
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.3em;
     color: var(--muted-light);
 }
 
-.shutter-hint-line {
+.loader-hint-line {
     width: 1px;
     height: 3.4rem;
     background: linear-gradient(var(--muted-light), transparent);
@@ -388,118 +392,152 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     will-change: opacity;
 }
 
+/* black spacer between about and projecten (stays ink so the fade is seamless) */
+.section-gap {
+    height: 28vh;
+    background: var(--ink);
+}
+
 /* ------------------------------------------------------------------
-   Projects — black→white fade intro, then parallax panels one by one
+   Projects — horizontal scroll with a black→white fade on entry
 ------------------------------------------------------------------ */
 
 .projects {
     position: relative;
     background: var(--paper);
     color: var(--text);
-    /* room after the last project so the footer overlap wipes over empty
-       white space instead of covering the Montage content */
-    padding-bottom: 40vh;
+    /* white tail so the footer overlap wipes over empty space, not a panel */
+    padding-bottom: 35vh;
 }
 
-/* intro panel: background is driven ink→paper by JS as you scroll in,
-   so the section fades from the black about-section to white */
-.projects-intro {
+/* tall track drives the horizontal travel; sticky pins one screen */
+.projects-hscroll { position: relative; height: 420vh; }
+
+.projects-sticky {
+    position: sticky;
+    top: 0;
     height: 100vh;
     height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: var(--ink); /* default; JS interpolates to paper */
+    overflow: hidden;
+    background: var(--ink); /* JS interpolates ink→paper on entry */
     will-change: background-color;
 }
 
-.projects-kicker {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.32em;
-    color: var(--muted-light);
-    margin-bottom: 1.4rem;
+.projects-track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
 }
 
-.projects-title {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-style: italic;
-    font-size: clamp(2.6rem, 8vw, 6rem);
-    line-height: 1;
-    color: var(--paper); /* JS interpolates to ink as bg turns white */
-}
-
-/* each project panel: media on one side, info on the other, alternating */
-.project {
+/* one full-viewport panel each — keeps the layout identical on any laptop */
+.hpanel {
     position: relative;
+    flex: 0 0 100vw;
+    height: 100%;
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    gap: clamp(2rem, 5vw, 5rem);
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: clamp(3rem, 8vh, 8rem) clamp(1.5rem, 5vw, 6rem);
-    max-width: 1400px;
-    margin: 0 auto;
+    gap: clamp(2rem, 5vw, 6rem);
+    padding: clamp(3rem, 10vh, 9rem) clamp(1.5rem, 6vw, 7rem);
 }
 
-.project:nth-child(even) .project-media { order: 2; }
-
-.project-media {
+.hpanel-media {
     position: relative;
     overflow: hidden;
-    aspect-ratio: 4 / 3;
+    height: min(70vh, 600px);
     background: #e7e4dd;
 }
 
-.project-media img {
+.hpanel-media img {
     position: absolute;
-    top: -12%;
-    left: 0;
+    inset: 0;
+    top: -9%;
     width: 100%;
-    height: 124%; /* taller than frame so parallax has room to travel */
+    height: 118%;
     object-fit: cover;
     filter: grayscale(1) contrast(1.03);
     will-change: transform;
 }
 
-.project-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    /* revealed on enter by JS */
-    opacity: 0;
-    transform: translateY(28px);
-    will-change: opacity, transform;
-}
+.hpanel-info { display: flex; flex-direction: column; align-items: flex-start; }
 
-.project-num {
+.hpanel-num {
     font-family: var(--font-sans);
     font-size: 0.8rem;
     letter-spacing: 0.22em;
     color: var(--olive, #8f8a6f);
-    margin-bottom: 1.4rem;
+    margin-bottom: clamp(1rem, 2vh, 1.6rem);
 }
 
-.project-name {
+.hpanel-name {
     font-family: var(--font-sans);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.01em;
-    font-size: clamp(2.2rem, 6vw, 4.5rem);
+    /* rem-anchored so it stays consistent across laptop widths */
+    font-size: clamp(2.2rem, 1.6rem + 2.4vw, 4.4rem);
     line-height: 1.02;
-    color: var(--text);
+    color: var(--panel-text, var(--text));
 }
 
-.project-desc {
-    margin-top: 1.4rem;
+.hpanel-desc {
+    margin-top: clamp(1rem, 2vh, 1.6rem);
     max-width: 34ch;
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.1rem);
     line-height: 1.6;
-    color: var(--muted);
+    color: var(--panel-muted, var(--muted));
+}
+
+.hpanel-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: clamp(1.4rem, 3vh, 2.2rem);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    text-decoration: none;
+    color: var(--panel-text, var(--text));
+    border-bottom: 1px solid rgba(19, 18, 17, 0.35);
+    padding-bottom: 0.35rem;
+    transition: gap 200ms ease, border-color 200ms ease;
+}
+
+.hpanel-link::after { content: "→"; }
+.hpanel-link:hover,
+.hpanel-link:focus-visible { gap: 1rem; border-color: var(--panel-text, var(--text)); }
+
+/* label + progress bar */
+.projects-hlabel {
+    position: absolute;
+    top: clamp(1.5rem, 4vh, 3rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--panel-muted, var(--muted));
+}
+
+.projects-progress {
+    position: absolute;
+    left: clamp(1.5rem, 6vw, 7rem);
+    right: clamp(1.5rem, 6vw, 7rem);
+    bottom: clamp(1.5rem, 4vh, 3rem);
+    height: 1px;
+    background: rgba(19, 18, 17, 0.18);
+    z-index: 2;
+}
+
+.projects-progress span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--text);
+    transform: scaleX(0);
+    transform-origin: left;
+    will-change: transform;
 }
 
 /* ------------------------------------------------------------------
@@ -713,6 +751,16 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     outline-offset: 4px;
 }
 
+.form-status {
+    min-height: 1em;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgba(10, 10, 11, 0.72);
+}
+.form-status.is-ok { color: var(--ink); }
+.form-status.is-err { color: #7a2e22; }
+
 /* ------------------------------------------------------------------
    Mobile / tablet menu overlay
 ------------------------------------------------------------------ */
@@ -829,16 +877,15 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
         gap: 0.3rem;
     }
 
-    /* projects stack: media on top, info below */
-    .project {
+    /* projects: panel stacks media over info; still scrolls horizontally */
+    .hpanel {
         grid-template-columns: 1fr;
-        gap: 1.8rem;
-        min-height: auto;
-        padding: 12vh clamp(1.5rem, 6vw, 3rem);
+        gap: 1.6rem;
         align-content: center;
+        padding: 12vh clamp(1.5rem, 6vw, 3rem);
     }
-    .project:nth-child(even) .project-media { order: 0; }
-    .project-media { aspect-ratio: 3 / 2; }
+    .hpanel-media { height: 38vh; }
+    .projects-progress { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -865,7 +912,302 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     .footer-bottom { padding-top: 1.1rem; padding-bottom: 1.1rem; }
 }
 
+/* Laptop / desktop: fixed display sizes so the big type renders identically
+   on every laptop width instead of scaling with vw (which made it look bigger
+   on one screen and smaller on another). Mobile/tablet keep their own sizes. */
+@media (min-width: 1025px) {
+    .message-row-a { font-size: 7rem; }
+    .message-row-b { font-size: 7.5rem; }
+    .message-signature { font-size: 9.5rem; }
+    .about-text { font-size: 4rem; }
+    .footer-sign { font-size: 4.2rem; }
+    .hpanel-name { font-size: 3.8rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .shutter-hint-line { animation: none; }
+    .loader-hint-line { animation: none; }
+}
+
+/* ------------------------------------------------------------------
+   Project category pages (video / fotografie / social)
+------------------------------------------------------------------ */
+
+.projectpage {
+    background: var(--paper);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+.pp-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem clamp(1.5rem, 4vw, 3.5rem);
+    background: rgba(251, 250, 248, 0.86);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(19, 18, 17, 0.1);
+}
+
+.pp-brand {
+    font-family: "Mrs Saint Delafield", cursive;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.pp-back {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 200ms ease;
+}
+
+.pp-back:hover,
+.pp-back:focus-visible { color: var(--text); }
+
+/* page intro */
+.pp-intro {
+    padding: clamp(5rem, 16vh, 12rem) clamp(1.5rem, 6vw, 7rem) clamp(3rem, 8vh, 6rem);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pp-kicker {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--olive);
+    margin-bottom: 1.4rem;
+}
+
+.pp-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    font-size: clamp(2.6rem, 2rem + 4vw, 6rem);
+}
+
+.pp-lead {
+    margin-top: 1.6rem;
+    max-width: 46ch;
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* project sections */
+.pp-projects {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 6vw, 7rem) clamp(6rem, 14vh, 12rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4rem, 10vh, 9rem);
+}
+
+.pp-project { position: relative; }
+
+/* clickable project card → opens its detail page */
+a.pp-project {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+a.pp-project .pp-media {
+    transition: border-color 260ms ease, transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+a.pp-project:hover .pp-media,
+a.pp-project:focus-visible .pp-media {
+    border-color: rgba(19, 18, 17, 0.5);
+}
+
+a.pp-project .pp-media img,
+a.pp-project .pp-media video { transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+a.pp-project:hover .pp-media img,
+a.pp-project:focus-visible .pp-media img { transform: scale(1.04); }
+
+a.pp-project .pp-name { transition: color 200ms ease; }
+a.pp-project:hover .pp-name,
+a.pp-project:focus-visible .pp-name { color: var(--olive); }
+
+a.pp-project:focus-visible { outline: 1px solid var(--text); outline-offset: 6px; }
+
+.pp-project-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.4rem;
+    margin-bottom: clamp(1.4rem, 3vh, 2.2rem);
+    flex-wrap: wrap;
+}
+
+/* "Bekijk →" cue pushed to the right of the head */
+.pp-cta {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+}
+.pp-cta::after { content: "→"; transition: transform 220ms ease; }
+a.pp-project:hover .pp-cta { color: var(--text); }
+a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
+
+.pp-num {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    color: var(--olive);
+}
+
+.pp-name {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1.04;
+    font-size: clamp(1.8rem, 1.4rem + 2.2vw, 3.4rem);
+}
+
+/* media placeholder — swap in <video>/<img> later */
+.pp-media {
+    position: relative;
+    overflow: hidden;
+    background: #e7e4dd;
+    border: 1px solid rgba(19, 18, 17, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pp-media--video { aspect-ratio: 16 / 9; }
+.pp-media--photo { aspect-ratio: 3 / 2; }
+
+.pp-media img,
+.pp-media video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pp-media-note {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+}
+
+.pp-desc {
+    margin-top: 1.2rem;
+    max-width: 60ch;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* page footer */
+.pp-foot {
+    border-top: 1px solid rgba(19, 18, 17, 0.12);
+    padding: 2.4rem clamp(1.5rem, 4vw, 3.5rem);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+}
+
+.pp-foot a { color: var(--text); text-decoration: none; }
+.pp-foot a:hover { color: var(--olive); }
+
+/* project detail — the actual work (photo grid / video stack) */
+.work {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 6vw, 7rem) clamp(6rem, 14vh, 12rem);
+}
+
+.work-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 2rem;
+    margin-bottom: clamp(2rem, 5vh, 4rem);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+}
+.work-meta strong { color: var(--text); font-weight: 500; }
+
+/* photo grid */
+.work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(220px, 30vw, 340px), 1fr));
+    gap: clamp(0.6rem, 1.4vw, 1.2rem);
+}
+.work-item {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    background: #e7e4dd;
+    border: 1px solid rgba(19, 18, 17, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.work-item--wide { grid-column: span 2; aspect-ratio: 3 / 2; }
+.work-item img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.work-note {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+}
+
+/* videos placed next to each other */
+.work-videos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: clamp(0.8rem, 1.6vw, 1.4rem);
+}
+.work-video {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #e7e4dd;
+    border: 1px solid rgba(19, 18, 17, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.work-video video,
+.work-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+
+/* vertical (social) clips in a row */
+.work-videos--vertical {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.8rem, 1.6vw, 1.4rem);
+}
+.work-video--vertical { aspect-ratio: 9 / 16; flex: 0 1 clamp(180px, 24vw, 300px); }
+
+@media (max-width: 640px) {
+    .work-item--wide { grid-column: span 1; aspect-ratio: 3 / 4; }
 }
