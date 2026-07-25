@@ -391,6 +391,9 @@
             if (data && (data.success === 'true' || data.success === true)) {
                 setStatus('Bedankt! Je bericht is verzonden.', 'ok');
                 contactForm.reset();
+            } else if (data && /activ/i.test(data.message || '')) {
+                // one-time: form not yet activated (owner must confirm via email)
+                setStatus('Formulier wordt nog geactiveerd. Probeer straks opnieuw.', 'err');
             } else {
                 setStatus('Er ging iets mis. Probeer het later opnieuw.', 'err');
             }
