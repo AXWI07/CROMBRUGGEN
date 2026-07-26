@@ -408,7 +408,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     color: var(--text);
     /* long white tail so you scroll well past the last panel before the
        footer appears, and the overlap wipes over empty space, not a panel */
-    padding-bottom: 120vh;
+    padding-bottom: 50vh;
 }
 
 /* tall track drives the horizontal travel; sticky pins one screen */
