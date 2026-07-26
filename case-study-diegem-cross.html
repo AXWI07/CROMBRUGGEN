@@ -28,16 +28,20 @@
                 <div class="cs-stat-num" data-count="1000" data-suffix="+">1000+</div>
                 <div class="cs-stat-label">nieuwe volgers</div>
             </div>
+            <div class="cs-stat cs-reveal">
+                <div class="cs-stat-num" data-count="200000" data-suffix="+">200000+</div>
+                <div class="cs-stat-label">views op alle platformen</div>
+            </div>
         </div>
 
         <div class="cs-body">
             <div class="cs-item cs-reveal">
-                <p class="cs-item-label">Aftermovie</p>
-                <p class="cs-item-text">Persoonlijke aftermovie gemaakt voor het event.</p>
+                <p class="cs-item-label">Rol</p>
+                <p class="cs-item-text">Ik was verantwoordelijk voor de fotografen, de coördinatie ter plekke en de aftermovie.</p>
             </div>
             <div class="cs-item cs-reveal">
-                <p class="cs-item-label">Rol</p>
-                <p class="cs-item-text">Verantwoordelijk voor de fotografen op locatie — de coördinatie, niet de fotografie zelf.</p>
+                <p class="cs-item-label">Samenwerking</p>
+                <p class="cs-item-text">Deze productie kwam tot stand in samenwerking met Sensan Productions.</p>
             </div>
         </div>
     </main>
@@ -50,23 +54,27 @@
     <script>
     (function () {
         var reveals = [].slice.call(document.querySelectorAll('.cs-reveal'));
-        var statEl = document.querySelector('.cs-stat-num');
-        var target = statEl ? (parseInt(statEl.getAttribute('data-count'), 10) || 0) : 0;
-        var suffix = statEl ? (statEl.getAttribute('data-suffix') || '') : '';
-        if (statEl) statEl.textContent = '0' + suffix;
+        var stats = [].slice.call(document.querySelectorAll('.cs-stat-num'));
 
-        var counted = false;
-        function count() {
-            if (counted || !statEl) return;
-            counted = true;
+        // set every stat to 0 and remember its target/suffix
+        stats.forEach(function (el) {
+            el._target = parseInt(el.getAttribute('data-count'), 10) || 0;
+            el._suffix = el.getAttribute('data-suffix') || '';
+            el._counted = false;
+            el.textContent = (0).toLocaleString('nl-NL') + el._suffix;
+        });
+
+        function countEl(el) {
+            if (el._counted) return;
+            el._counted = true;
             var dur = 1300, t0 = null;
             function step(now) {
                 if (t0 === null) t0 = now;
                 var p = Math.min((now - t0) / dur, 1);
                 var e = 1 - Math.pow(1 - p, 3); // easeOutCubic — fast then settles
-                statEl.textContent = Math.round(e * target) + suffix;
+                el.textContent = Math.round(e * el._target).toLocaleString('nl-NL') + el._suffix;
                 if (p < 1) requestAnimationFrame(step);
-                else statEl.textContent = target + suffix;
+                else el.textContent = el._target.toLocaleString('nl-NL') + el._suffix;
             }
             requestAnimationFrame(step);
         }
@@ -82,7 +90,8 @@
                     el.style.transitionDelay = (batch * 0.09) + 's';
                     batch++;
                     el.classList.add('in');
-                    if (statEl && el.contains(statEl)) count();
+                    // count any stat number inside this revealed block
+                    [].forEach.call(el.querySelectorAll('.cs-stat-num'), countEl);
                 }
             });
         }
@@ -95,7 +104,7 @@
         // safety net: never leave content hidden if something goes wrong
         setTimeout(function () {
             reveals.forEach(function (el) { el.classList.add('in'); });
-            count();
+            stats.forEach(countEl);
         }, 2500);
     })();
     </script>

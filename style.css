@@ -456,12 +456,8 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     width: 100%;
     height: 118%;
     object-fit: cover;
-    filter: grayscale(1) contrast(1.03);
     will-change: transform;
 }
-
-/* fotografie panel (2nd) shows the photo in full colour */
-.hpanel:nth-of-type(2) .hpanel-media img { filter: none; }
 
 .hpanel-info { display: flex; flex-direction: column; align-items: flex-start; }
 
