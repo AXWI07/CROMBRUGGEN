@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case study — Diegem Cross — Crombruggen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Grotesk:wght@300;400;500;700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="projectpage">
+
+    <header class="pp-header">
+        <a class="pp-brand" href="index.html" aria-label="Crombruggen home">Crombruggen</a>
+        <a class="pp-back" href="project-social-diegem-cross.html">← Diegem Cross</a>
+    </header>
+
+    <main>
+        <div class="pp-intro">
+            <p class="pp-kicker cs-reveal">Case study</p>
+            <h1 class="pp-title cs-reveal">Diegem Cross</h1>
+            <p class="pp-lead cs-reveal">Social content en een persoonlijke aftermovie rond de cross — met een duidelijk resultaat.</p>
+        </div>
+
+        <div class="cs-results">
+            <div class="cs-stat cs-reveal">
+                <div class="cs-stat-num" data-count="1000" data-suffix="+">1000+</div>
+                <div class="cs-stat-label">nieuwe volgers</div>
+            </div>
+        </div>
+
+        <div class="cs-body">
+            <div class="cs-item cs-reveal">
+                <p class="cs-item-label">Aftermovie</p>
+                <p class="cs-item-text">Persoonlijke aftermovie gemaakt voor het event.</p>
+            </div>
+            <div class="cs-item cs-reveal">
+                <p class="cs-item-label">Rol</p>
+                <p class="cs-item-text">Verantwoordelijk voor de fotografen op locatie — de coördinatie, niet de fotografie zelf.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="pp-foot">
+        <span>&copy; 2026 Crombruggen</span>
+        <a href="project-social-diegem-cross.html">← Diegem Cross</a>
+    </footer>
+
+    <script>
+    (function () {
+        var reveals = [].slice.call(document.querySelectorAll('.cs-reveal'));
+        var statEl = document.querySelector('.cs-stat-num');
+        var target = statEl ? (parseInt(statEl.getAttribute('data-count'), 10) || 0) : 0;
+        var suffix = statEl ? (statEl.getAttribute('data-suffix') || '') : '';
+        if (statEl) statEl.textContent = '0' + suffix;
+
+        var counted = false;
+        function count() {
+            if (counted || !statEl) return;
+            counted = true;
+            var dur = 1300, t0 = null;
+            function step(now) {
+                if (t0 === null) t0 = now;
+                var p = Math.min((now - t0) / dur, 1);
+                var e = 1 - Math.pow(1 - p, 3); // easeOutCubic — fast then settles
+                statEl.textContent = Math.round(e * target) + suffix;
+                if (p < 1) requestAnimationFrame(step);
+                else statEl.textContent = target + suffix;
+            }
+            requestAnimationFrame(step);
+        }
+
+        function inView(el) {
+            var r = el.getBoundingClientRect();
+            return r.top < (window.innerHeight || document.documentElement.clientHeight) * 0.85 && r.bottom > 0;
+        }
+        function check() {
+            var batch = 0;
+            reveals.forEach(function (el) {
+                if (!el.classList.contains('in') && inView(el)) {
+                    el.style.transitionDelay = (batch * 0.09) + 's';
+                    batch++;
+                    el.classList.add('in');
+                    if (statEl && el.contains(statEl)) count();
+                }
+            });
+        }
+
+        window.addEventListener('scroll', check, { passive: true });
+        window.addEventListener('resize', check);
+        window.addEventListener('load', check);
+        check(); // reveal whatever is already in view on arrival
+
+        // safety net: never leave content hidden if something goes wrong
+        setTimeout(function () {
+            reveals.forEach(function (el) { el.classList.add('in'); });
+            count();
+        }, 2500);
+    })();
+    </script>
+</body>
+</html>

@@ -406,8 +406,9 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     position: relative;
     background: var(--paper);
     color: var(--text);
-    /* white tail so the footer overlap wipes over empty space, not a panel */
-    padding-bottom: 35vh;
+    /* long white tail so you scroll well past the last panel before the
+       footer appears, and the overlap wipes over empty space, not a panel */
+    padding-bottom: 120vh;
 }
 
 /* tall track drives the horizontal travel; sticky pins one screen */
@@ -551,7 +552,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     position: relative;
     z-index: 5;
     /* slides up over the empty tail of the projects section */
-    margin-top: -30vh;
+    margin-top: -20vh;
     background: #8f8a6f;
     color: var(--ink);
     will-change: transform;
@@ -1223,4 +1224,94 @@ a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
 
 @media (max-width: 640px) {
     .work-item--wide { grid-column: span 1; aspect-ratio: 3 / 4; }
+}
+
+/* Instagram embeds (social detail) */
+.social-embeds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1rem, 2vw, 1.6rem);
+    justify-content: center;
+}
+.social-embeds .instagram-media {
+    margin: 0 !important;
+    min-width: 300px !important;
+    flex: 0 1 340px;
+}
+
+/* outlined button (case study link etc.) */
+.pp-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: clamp(2rem, 5vh, 3.5rem);
+    padding: 0.95rem 2.4rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    transition: background 200ms ease, color 200ms ease, gap 200ms ease;
+}
+.pp-button::after { content: "→"; }
+.pp-button:hover,
+.pp-button:focus-visible { background: var(--ink); color: var(--paper); gap: 1rem; }
+
+/* Case study page */
+.cs-results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(2rem, 6vw, 5rem);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vh, 3rem) clamp(1.5rem, 6vw, 7rem) clamp(2rem, 5vh, 4rem);
+    border-bottom: 1px solid rgba(19, 18, 17, 0.12);
+}
+.cs-stat-num {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    line-height: 1;
+    color: var(--ink);
+}
+.cs-stat-label {
+    margin-top: 0.7rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    max-width: 22ch;
+}
+.cs-body {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(3rem, 7vh, 6rem) clamp(1.5rem, 6vw, 7rem) clamp(6rem, 14vh, 12rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(2rem, 5vw, 4rem);
+}
+.cs-item-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--olive);
+    margin-bottom: 0.9rem;
+}
+.cs-item-text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+/* scroll-reveal for case study elements (fade + rise, staggered by JS) */
+.cs-reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cs-reveal.in {
+    opacity: 1;
+    transform: none;
 }

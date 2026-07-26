@@ -330,20 +330,29 @@
 
     var footerEl = document.querySelector('.footer');
     var footerP = 0;
+    var footerTopDoc = 0;   // cached layout position (avoids per-frame reflow)
+    var footerLastY = null;
+
+    function measureFooter() { footerTopDoc = footerEl.offsetTop; }
+    measureFooter();
+    window.addEventListener('resize', measureFooter);
+    window.addEventListener('load', measureFooter);
 
     function footerFrame() {
         requestAnimationFrame(footerFrame);
-        // layout position, unaffected by the transform itself
-        var top = footerEl.offsetTop - window.scrollY;
         var vh = window.innerHeight;
-        // start later (footer must be well into view) + longer range, so the
-        // overlap waits longer and rises slowly
-        var target = clamp01((vh * 0.5 - top) / (vh * 1.2));
-        // heavier trailing catch-up → smoother, more gradual glide
-        footerP += (target - footerP) * 0.045;
-        if (Math.abs(target - footerP) < 0.0002) footerP = target;
-        var y = (1 - easeOut(footerP)) * 20; // vh
-        footerEl.style.transform = 'translate3d(0, ' + y.toFixed(3) + 'vh, 0)';
+        // cached offsetTop minus scrollY — cheap, no layout read on the scroll path
+        var top = footerTopDoc - window.scrollY;
+        // slide up over a long range as the footer enters, so it glides in
+        var target = clamp01((vh - top) / (vh * 1.6));
+        footerP += (target - footerP) * 0.06;
+        if (Math.abs(target - footerP) < 0.0004) footerP = target;
+        var y = (1 - easeOut(footerP)) * 12; // vh — small travel = light repaint
+        // only touch the DOM when it actually moves (avoids needless compositing)
+        if (footerLastY === null || Math.abs(y - footerLastY) > 0.02) {
+            footerEl.style.transform = 'translate3d(0,' + y.toFixed(2) + 'vh,0)';
+            footerLastY = y;
+        }
     }
     requestAnimationFrame(footerFrame);
 
