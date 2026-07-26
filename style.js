@@ -304,7 +304,7 @@
 
         // translate the track horizontally across its overflow
         var maxX = projTrack.scrollWidth - vw;
-        projTrack.style.transform = 'translate3d(' + (-projCur * maxX).toFixed(2) + 'px, 0, 0)';
+        projTrack.style.transform = 'translate3d(' + (-Math.min(projCur / 0.85, 1) * maxX).toFixed(2) + 'px, 0, 0)';
         if (projBar) projBar.style.transform = 'scaleX(' + projCur.toFixed(4) + ')';
 
         // black → white fade over the first 18% of the pin (smoothstep), so it
@@ -324,37 +324,7 @@
     }
     requestAnimationFrame(projectsFrame);
 
-    /* --------------------------------------------------------------
-       2b-2. Footer: slides up over the projects section
-    -------------------------------------------------------------- */
 
-    var footerEl = document.querySelector('.footer');
-    var footerP = 0;
-    var footerTopDoc = 0;   // cached layout position (avoids per-frame reflow)
-    var footerLastY = null;
-
-    function measureFooter() { footerTopDoc = footerEl.offsetTop; }
-    measureFooter();
-    window.addEventListener('resize', measureFooter);
-    window.addEventListener('load', measureFooter);
-
-    function footerFrame() {
-        requestAnimationFrame(footerFrame);
-        var vh = window.innerHeight;
-        // cached offsetTop minus scrollY — cheap, no layout read on the scroll path
-        var top = footerTopDoc - window.scrollY;
-        // slide up over a long range as the footer enters, so it glides in
-        var target = clamp01((vh - top) / (vh * 1.6));
-        footerP += (target - footerP) * 0.06;
-        if (Math.abs(target - footerP) < 0.0004) footerP = target;
-        var y = (1 - easeOut(footerP)) * 12; // vh — small travel = light repaint
-        // only touch the DOM when it actually moves (avoids needless compositing)
-        if (footerLastY === null || Math.abs(y - footerLastY) > 0.02) {
-            footerEl.style.transform = 'translate3d(0,' + y.toFixed(2) + 'vh,0)';
-            footerLastY = y;
-        }
-    }
-    requestAnimationFrame(footerFrame);
 
     /* --------------------------------------------------------------
        2c. Contact form: submits straight to Senne's inbox via FormSubmit
