@@ -549,10 +549,135 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     z-index: 5;
     /* slides up over the empty tail of the projects section */
     margin-top: -20vh;
-    background: #8f8a6f;
     color: var(--ink);
     will-change: transform;
 }
+
+/* ---- Variant 3 contact CTA ---- */
+.footer-cta {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: clamp(4rem, 11vh, 8rem) clamp(1.5rem, 5vw, 3.5rem) clamp(2rem, 5vh, 3rem);
+}
+
+.fc3-kick {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: rgba(10, 10, 11, 0.6);
+}
+
+.fc3-head {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.98;
+    font-size: clamp(2.4rem, 9vw, 7rem);
+    margin: 1.4rem 0 2.6rem;
+    color: var(--ink);
+}
+.fc3-head .w { display: inline-block; overflow: hidden; vertical-align: top; }
+.fc3-head .w span {
+    display: inline-block;
+    transform: translateY(110%);
+    transition: transform 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.fc3-head.in .w span { transform: none; }
+
+/* pill button with fill sweep */
+.fc3-btn {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    text-decoration: none;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 1.1rem 2.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.8rem;
+    color: var(--ink);
+    isolation: isolate;
+    transition: color 0.35s ease;
+}
+.fc3-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    z-index: -1;
+    transform: translateY(101%);
+    transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.fc3-btn:hover, .fc3-btn:focus-visible { color: #8f8a6f; }
+.fc3-btn:hover::before, .fc3-btn:focus-visible::before { transform: translateY(0); }
+.fc3-btn:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+
+.fc3-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.8rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+}
+.fc3-row a { text-decoration: none; color: rgba(10, 10, 11, 0.7); transition: color 0.3s ease; }
+.fc3-row a:hover, .fc3-row a:focus-visible { color: var(--ink); }
+
+.fc3-socials { display: flex; justify-content: center; gap: 0.8rem; margin-top: 2.4rem; }
+.fc3-socials a {
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(10, 10, 11, 0.28);
+    border-radius: 50%;
+    color: var(--ink);
+    transition: transform 0.35s ease, background 0.3s ease, color 0.3s ease;
+}
+.fc3-socials a:hover, .fc3-socials a:focus-visible {
+    background: var(--ink); color: #8f8a6f; transform: translateY(-4px);
+}
+.fc3-socials svg { width: 19px; height: 19px; }
+
+.fc3-sign {
+    font-family: "Mrs Saint Delafield", cursive;
+    font-size: clamp(2.6rem, 6vw, 4rem);
+    line-height: 1;
+    color: var(--ink);
+    margin-top: 3rem;
+}
+
+.fc3-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem 1.8rem;
+    flex-wrap: wrap;
+    margin-top: clamp(2.5rem, 6vh, 4rem);
+    padding-top: 1.6rem;
+    border-top: 1px solid rgba(10, 10, 11, 0.2);
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(10, 10, 11, 0.6);
+}
+.fc3-bottom a {
+    text-decoration: none;
+    color: var(--ink);
+    border-bottom: 1px solid rgba(10, 10, 11, 0.35);
+    padding-bottom: 0.1rem;
+    transition: border-color 0.2s ease;
+}
+.fc3-bottom a:hover { border-color: var(--ink); }
+
+/* footer reveal (fade + rise) */
+.footer-rv {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer-rv.in { opacity: 1; transform: none; }
 
 .footer-inner {
     display: grid;

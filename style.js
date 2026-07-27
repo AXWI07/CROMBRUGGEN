@@ -338,7 +338,7 @@
 
     var contactForm = document.getElementById('contact-form');
     var formStatus = document.getElementById('form-status');
-    var formSubmit = contactForm.querySelector('.form-submit');
+    var formSubmit = contactForm ? contactForm.querySelector('.form-submit') : null;
 
     function setStatus(msg, kind) {
         if (!formStatus) return;
@@ -346,7 +346,7 @@
         formStatus.className = 'form-status' + (kind ? ' is-' + kind : '');
     }
 
-    contactForm.addEventListener('submit', function (e) {
+    if (contactForm) contactForm.addEventListener('submit', function (e) {
         e.preventDefault();
         var naam = contactForm.naam.value.trim();
         var email = contactForm.email.value.trim();
@@ -382,6 +382,39 @@
             formSubmit.disabled = false;
         });
     });
+
+    /* --------------------------------------------------------------
+       2d. Footer reveal — headline flips up, the rest fades in on enter
+    -------------------------------------------------------------- */
+
+    var footerEl = document.querySelector('.footer');
+    if (footerEl) {
+        var fHead = footerEl.querySelector('.fc3-head');
+        var fRvs = [].slice.call(footerEl.querySelectorAll('.footer-rv'));
+        if (fHead) {
+            [].forEach.call(fHead.querySelectorAll('.w span'), function (s, i) {
+                s.style.transitionDelay = (i * 0.09) + 's';
+            });
+        }
+        var footerShown = false;
+        function footerReveal() {
+            if (footerShown) return;
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            if (footerEl.getBoundingClientRect().top < vh * 0.82) {
+                footerShown = true;
+                if (fHead) fHead.classList.add('in');
+                fRvs.forEach(function (el, i) {
+                    el.style.transitionDelay = (0.15 + i * 0.09) + 's';
+                    el.classList.add('in');
+                });
+                window.removeEventListener('scroll', footerReveal);
+            }
+        }
+        window.addEventListener('scroll', footerReveal, { passive: true });
+        window.addEventListener('resize', footerReveal);
+        window.addEventListener('load', footerReveal);
+        footerReveal();
+    }
 
     /* --------------------------------------------------------------
        3. WebGL mask-distortion hero
