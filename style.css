@@ -196,23 +196,15 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     line-height: 1.35;          /* room for the tall C flourish so it isn't clipped */
     padding-top: 0.12em;
     white-space: nowrap;
-    min-height: 1.35em;         /* stable height while the letters type in */
+    /* handwriting: the cursive is uncovered left-to-right, as if being written.
+       Negative top/bottom insets keep the tall flourishes from being clipped. */
+    clip-path: inset(-18% 100% -18% -2%);
+    animation: loader-write 2.9s cubic-bezier(0.62, 0, 0.38, 1) 0.35s forwards;
 }
 
-/* typewriter caret */
-.loader-word::after {
-    content: "";
-    display: inline-block;
-    width: 0.03em;
-    height: 0.58em;
-    margin-left: 0.04em;
-    background: var(--paper);
-    vertical-align: -0.04em;
-    animation: caret-blink 0.72s steps(1) infinite;
+@keyframes loader-write {
+    to { clip-path: inset(-18% -3% -18% -2%); }
 }
-.loader-word.done::after { opacity: 0; animation: none; }
-
-@keyframes caret-blink { 50% { opacity: 0; } }
 
 .loader-hint {
     position: absolute;
@@ -451,9 +443,11 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 .hpanel-media img {
     position: absolute;
-    inset: 0;
+    /* oversized on all sides so the horizontal parallax never exposes the
+       beige media background as a light strip on the left/right edge */
     top: -9%;
-    width: 100%;
+    left: -9%;
+    width: 118%;
     height: 118%;
     object-fit: cover;
     will-change: transform;

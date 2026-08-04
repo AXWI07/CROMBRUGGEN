@@ -19,19 +19,7 @@
     // no page scrolling while the loading screen is up
     document.body.classList.add('is-locked');
 
-    // type the brand name out letter by letter
-    (function typeLoader() {
-        var el = loader && loader.querySelector('.loader-word');
-        if (!el) return;
-        var full = (el.textContent || 'Crombruggen').trim();
-        el.textContent = '';
-        var i = 0;
-        (function tick() {
-            el.textContent = full.slice(0, i);
-            if (i < full.length) { i++; setTimeout(tick, 135); }
-            else { el.classList.add('done'); }
-        })();
-    })();
+    // the "Crombruggen" handwriting reveal is a pure CSS animation (loader-write)
 
     // ease the hero blob in once the loader lifts away
     function revealHero() {
@@ -315,11 +303,13 @@
         projSticky.style.setProperty('--panel-text', mix(P_LIGHT, P_TEXT, f));
         projSticky.style.setProperty('--panel-muted', mix(P_MUTEDL, P_MUTED, f));
 
-        // gentle parallax inside each panel image
+        // gentle parallax inside each panel image (clamped so it stays within
+        // the image overscan and never reveals the beige media background)
         for (var i = 0; i < projParallax.length; i++) {
             var pr = projParallax[i].parentNode.getBoundingClientRect();
             var prog = (pr.left + pr.width / 2 - vw / 2) / vw;
-            projParallax[i].style.transform = 'translate3d(' + (prog * -6).toFixed(2) + '%, 0, 0)';
+            var px = Math.max(-7, Math.min(7, prog * -6));
+            projParallax[i].style.transform = 'translate3d(' + px.toFixed(2) + '%, 0, 0)';
         }
     }
     requestAnimationFrame(projectsFrame);
