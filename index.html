@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crombruggen — Fotografie</title>
+    <title>Crombruggen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Grotesk:wght@300;400;500;700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
@@ -15,8 +15,14 @@
     <div class="stage" id="stage">
         <div class="stage-sticky">
 
-            <!-- Hero (revealed behind the shutter) -->
+            <!-- Hero — autoplaying video header -->
             <section class="hero" aria-label="Intro">
+                <video class="hero-video" autoplay muted loop playsinline preload="auto"
+                       poster="images/covers/hero-diegem-poster.jpg" aria-hidden="true">
+                    <source src="images/covers/hero-diegem.mp4" type="video/mp4">
+                </video>
+                <div class="hero-scrim" aria-hidden="true"></div>
+
                 <header class="hero-header">
                     <a class="hero-brand" href="#">Crombruggen</a>
                     <nav class="hero-nav" aria-label="Hoofdnavigatie">
@@ -31,13 +37,10 @@
                     </button>
                 </header>
 
-                <!-- WebGL liquid mask reveals the portrait -->
-                <canvas id="mask-canvas" aria-hidden="true"></canvas>
-                <!-- Fallback when WebGL2 is unavailable -->
-                <div class="hero-fallback" id="hero-fallback" aria-hidden="true">
-                    <img src="images/landscape.JPG" alt="">
+                <div class="hero-content">
+                    <h1 class="hero-heading">Naast jou,<br>achter de lens.</h1>
+                    <a class="hero-cta" href="#projecten">Start hier</a>
                 </div>
-
             </section>
 
         </div>

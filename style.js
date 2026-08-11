@@ -19,6 +19,19 @@
     // no page scrolling while the loading screen is up
     document.body.classList.add('is-locked');
 
+    // keep the hero video playing (muted autoplay is sometimes blocked until a
+    // gesture) — force play and retry on the first interaction
+    var heroVideo = document.querySelector('.hero-video');
+    if (heroVideo) {
+        heroVideo.muted = true;
+        var heroPlay = function () { var p = heroVideo.play(); if (p && p.catch) p.catch(function () {}); };
+        heroPlay();
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) heroPlay(); });
+        window.addEventListener('pointerdown', heroPlay, { once: true });
+        window.addEventListener('wheel', heroPlay, { once: true, passive: true });
+        window.addEventListener('touchstart', heroPlay, { once: true, passive: true });
+    }
+
     // the "Crombruggen" handwriting reveal is a pure CSS animation (loader-write)
 
     // ease the hero blob in once the loader lifts away
@@ -407,10 +420,12 @@
     }
 
     /* --------------------------------------------------------------
-       3. WebGL mask-distortion hero
+       3. WebGL mask-distortion hero (only if the canvas exists; the hero
+          is now a video, so this is skipped)
     -------------------------------------------------------------- */
 
     var canvas = document.getElementById('mask-canvas');
+    if (!canvas) return;
     var gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: true });
 
     if (!gl) {
