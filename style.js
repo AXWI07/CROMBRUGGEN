@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
-   Crombruggen — shutter intro + WebGL mask-distortion hero
+   Crombruggen - shutter intro + WebGL mask-distortion hero
    Distortion math adapted from the Unicorn.Studio "Mask Distortion"
    scene (perlin + fbm domain-warped mask edge, mouse parallax).
 ------------------------------------------------------------------ */
@@ -20,7 +20,7 @@
     document.body.classList.add('is-locked');
 
     // keep the hero video playing (muted autoplay is sometimes blocked until a
-    // gesture) — force play and retry on the first interaction
+    // gesture) - force play and retry on the first interaction
     var heroVideo = document.querySelector('.hero-video');
     if (heroVideo) {
         heroVideo.muted = true;
@@ -58,7 +58,7 @@
 
     // Loading screen (pikeproductions.be style): the white symbol fills
     // left-to-right and a progress bar grows, then it lifts away. Runs on its
-    // own — no scroll needed. Progress eases 0 -> 1 over ~2s, then holds a beat.
+    // own - no scroll needed. Progress eases 0 -> 1 over ~2s, then holds a beat.
     function playIntro() {
         if (introStarted) return;
         introStarted = true;
@@ -78,7 +78,7 @@
         })(t0);
     }
 
-    /* Lenis smooth scrolling — turns every notched wheel step into a ~1.2s
+    /* Lenis smooth scrolling - turns every notched wheel step into a ~1.2s
        eased glide, the same recipe as the portfolio. This is what makes the
        scroll-scrubbed sections (message / about / footer) feel high-end.
        Started only after the intro, and only at desktop widths (wheel input);
@@ -134,7 +134,7 @@
         if (h && h.length > 1) {
             try {
                 if (document.querySelector(h)) skipIntroTo(h);
-            } catch (err) { /* invalid selector — ignore */ }
+            } catch (err) { /* invalid selector - ignore */ }
         }
     })();
 
@@ -165,7 +165,7 @@
 
     /* --------------------------------------------------------------
        2. Over Senne: portrait pushes in, statement brightens word by
-       word, signature writes itself — one reveal when scrolled into view
+       word, signature writes itself - one reveal when scrolled into view
     -------------------------------------------------------------- */
 
     function clamp01(v) { return Math.min(Math.max(v, 0), 1); }
@@ -213,6 +213,73 @@
     }, { threshold: 0.35 });
     overIO.observe(overSection);
 
+    /* count-up stats at the end of Over Senne - ease 0→target once in view.
+       rect-based (the preview pane never fires IntersectionObserver). */
+    var overStats = document.getElementById('over-stats');
+    if (overStats) {
+        var counters = [].slice.call(overStats.querySelectorAll('[data-count]'));
+        var counted = false;
+        var easeOutCubicC = function (t) { return 1 - Math.pow(1 - t, 3); };
+        function runCount() {
+            counters.forEach(function (el) {
+                var target = parseFloat(el.getAttribute('data-count')) || 0;
+                var t0 = performance.now(), DUR = 1300;
+                (function step(now) {
+                    var p = Math.min((now - t0) / DUR, 1);
+                    el.textContent = Math.round(easeOutCubicC(p) * target).toLocaleString('nl-NL');
+                    if (p < 1) requestAnimationFrame(step);
+                })(t0);
+            });
+            // safety net: guarantee final values even if rAF stalls
+            setTimeout(function () {
+                counters.forEach(function (el) {
+                    el.textContent = (parseFloat(el.getAttribute('data-count')) || 0).toLocaleString('nl-NL');
+                });
+            }, 1800);
+        }
+        function statsReveal() {
+            if (counted) return;
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            if (overStats.getBoundingClientRect().top < vh * 0.9) {
+                counted = true;
+                runCount();
+                window.removeEventListener('scroll', statsReveal);
+            }
+        }
+        window.addEventListener('scroll', statsReveal, { passive: true });
+        window.addEventListener('resize', statsReveal);
+        window.addEventListener('load', statsReveal);
+        statsReveal();
+    }
+
+    /* --------------------------------------------------------------
+       2a. Van idee tot beeld: 4-step process - fade+rise reveal, staggered
+    -------------------------------------------------------------- */
+
+    var processEl = document.getElementById('proces');
+    if (processEl) {
+        var pSteps = [].slice.call(processEl.querySelectorAll('.process-step'));
+        pSteps.forEach(function (s, i) {
+            s.style.setProperty('--d', (0.15 + i * 0.13) + 's'); // per-step stagger, read by CSS
+        });
+        var pShown = false;
+        function processReveal() {
+            if (pShown) return;
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            if (processEl.getBoundingClientRect().top < vh * 0.82) {
+                pShown = true;
+                processEl.classList.add('is-in');
+                window.removeEventListener('scroll', processReveal);
+            }
+        }
+        window.addEventListener('scroll', processReveal, { passive: true });
+        window.addEventListener('resize', processReveal);
+        window.addEventListener('load', processReveal);
+        processReveal();
+        // (blank-ship guard is the prefers-reduced-motion CSS fallback, which
+        // keeps the steps visible in headless/preview where transitions pause)
+    }
+
     /* --------------------------------------------------------------
        2b-1. Projects: horizontal scroll with a black→white fade on entry
     -------------------------------------------------------------- */
@@ -237,6 +304,19 @@
     function projectsFrame() {
         requestAnimationFrame(projectsFrame);
         if (!projHscroll) return;
+
+        // mobile/tablet: native side-swipe carousel — don't scroll-jack, and
+        // clear any inline styles a prior desktop frame may have left behind
+        if (window.innerWidth <= 1024) {
+            if (projTrack.style.transform) projTrack.style.transform = '';
+            if (projSticky.style.backgroundColor) {
+                projSticky.style.backgroundColor = '';
+                projSticky.style.removeProperty('--panel-text');
+                projSticky.style.removeProperty('--panel-muted');
+            }
+            return;
+        }
+
         var vw = window.innerWidth, vh = window.innerHeight;
 
         var rect = projHscroll.getBoundingClientRect();
@@ -275,7 +355,7 @@
 
     /* --------------------------------------------------------------
        2c. Contact form: submits straight to Senne's inbox via FormSubmit
-       (no mail client opens). No API key needed — the very first message
+       (no mail client opens). No API key needed - the very first message
        triggers a one-time confirmation email to vancrombruggensenne@gmail.com;
        click "Activate Form" in it once, and every submission after that is
        delivered directly to the inbox.
@@ -309,7 +389,7 @@
                 name: naam,
                 email: email,
                 message: bericht,
-                _subject: 'Contact via crombruggen — ' + naam,
+                _subject: 'Contact via crombruggen - ' + naam,
                 _template: 'table',
                 _captcha: 'false'
             })
@@ -331,7 +411,7 @@
     });
 
     /* --------------------------------------------------------------
-       2d. Footer reveal — headline flips up, the rest fades in on enter
+       2d. Footer reveal - headline flips up, the rest fades in on enter
     -------------------------------------------------------------- */
 
     var footerEl = document.querySelector('.footer');

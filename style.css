@@ -1,10 +1,10 @@
 /* ------------------------------------------------------------------
-   Crombruggen — begin screen (aperture) + mask-distortion hero
+   Crombruggen - begin screen (aperture) + mask-distortion hero
 ------------------------------------------------------------------ */
 
 :root {
     --ink: #0a0a0b;          /* near-black, matches screen.jpeg (begin screen) */
-    --paper: #fbfaf8;        /* warm white — hero background */
+    --paper: #fbfaf8;        /* warm white - hero background */
     --text: #131211;         /* near-black lettering on white */
     --muted: #7a766f;
     --muted-light: #8a8783;  /* for text on the black begin screen */
@@ -12,6 +12,7 @@
 
     --font-display: "Cormorant Garamond", Georgia, serif;
     --font-sans: "Space Grotesk", system-ui, sans-serif;
+    --font-hero: "Bricolage Grotesque", "Space Grotesk", system-ui, sans-serif;
 
     /* driven by JS: 0 = shutter closed, 1 = fully open */
     --iris: 0%;
@@ -36,7 +37,7 @@ body {
 body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 /* ------------------------------------------------------------------
-   Scroll stage — tall track, sticky viewport inside
+   Scroll stage - tall track, sticky viewport inside
 ------------------------------------------------------------------ */
 
 /* single-screen page: the intro plays in place, no scroll track needed */
@@ -101,13 +102,14 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .hero-content > * { pointer-events: auto; }
 
 .hero-heading {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-style: italic;
+    font-family: var(--font-hero);
+    font-weight: 500;
+    font-style: normal;
     color: var(--paper);
-    font-size: clamp(2.6rem, 8vw, 6.5rem);
-    line-height: 1.03;
-    letter-spacing: 0.01em;
+    /* smaller + cleaner than before - reads as a refined title, not shouting */
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1.06;
+    letter-spacing: -0.01em;
     text-shadow: 0 2px 34px rgba(0, 0, 0, 0.35);
     animation: hero-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
 }
@@ -221,7 +223,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
-   Loading screen — black; "Crombruggen" writes itself, slides up on scroll
+   Loading screen - black; "Crombruggen" writes itself, slides up on scroll
 ------------------------------------------------------------------ */
 
 .loader {
@@ -240,7 +242,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .loader.is-up { transform: translateY(-100%); }
 
 /* the white symbol: a dim "ghost" copy with a bright copy on top that JS
-   reveals left-to-right (clip-path) as the load progresses — pikeproductions.be */
+   reveals left-to-right (clip-path) as the load progresses - pikeproductions.be */
 .loader-logo {
     position: relative;
     height: clamp(88px, 15vh, 150px);
@@ -289,7 +291,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
-   Over Senne — cinematic portrait, statement + signature reveal on scroll
+   Over Senne - cinematic portrait, statement + signature reveal on scroll
 ------------------------------------------------------------------ */
 
 /* ink band that gives the Over section room to breathe below the hero */
@@ -324,7 +326,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(1) contrast(1.02);
+    filter: contrast(1.02); /* full colour (was grayscale) */
 }
 
 /* gradient scrim keeps the bottom text legible over any photo */
@@ -390,6 +392,170 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 .over.is-in .over-sig { clip-path: inset(-30% 0% -30% 0); }
 
+/* count-up stats at the end of Over Senne - white numerals in the photo's
+   monochrome palette, olive "+" accent, muted labels */
+.over-stats {
+    /* grid (not flex-wrap) so pairs never split onto a lonely line:
+       4 across on desktop, 2×2 on smaller screens - "200K+ views" and
+       "5+ jaar achter de lens" always stay on the same row */
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+    gap: clamp(1.4rem, 4vw, 3.4rem) clamp(1.6rem, 5vw, 3.4rem);
+    margin-top: clamp(1.6rem, 4vh, 2.4rem);
+    padding-top: clamp(1.4rem, 3vh, 1.8rem);
+    border-top: 1px solid rgba(251, 250, 248, 0.16);
+}
+
+@media (max-width: 720px) {
+    .over-stats { grid-template-columns: repeat(2, auto); }
+}
+
+.over-stat-n {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1;
+    color: var(--paper);
+    font-variant-numeric: tabular-nums; /* digits don't jitter while counting */
+    letter-spacing: 0.005em;
+}
+
+.over-stat-n i { color: #8f8a6f; font-style: normal; }
+
+.over-stat-l {
+    margin-top: 0.5rem;
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted-light);
+    max-width: 16ch;
+}
+
+/* ------------------------------------------------------------------
+   Van idee tot beeld - 4-step process (editorial list, ink section)
+------------------------------------------------------------------ */
+
+.process {
+    position: relative;
+    background: var(--ink);
+    color: var(--paper);
+    /* extra top room so it isn't crowding the Over Senne section above */
+    padding: clamp(9rem, 26vh, 18rem) 0 clamp(2rem, 6vh, 4rem);
+}
+
+.process-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 6vw, 7rem);
+}
+
+.process-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1.02;
+    font-size: clamp(1.9rem, 1.4rem + 2.6vw, 3rem);
+    text-wrap: balance;
+}
+
+.process-lead {
+    margin-top: 1rem;
+    max-width: 52ch;
+    font-size: clamp(0.98rem, 0.94rem + 0.2vw, 1.1rem);
+    line-height: 1.6;
+    color: var(--muted-light);
+    margin-bottom: clamp(2rem, 5vh, 3.4rem);
+}
+
+.process-list { list-style: none; }
+
+.process-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(1.4rem, 4vw, 3.2rem);
+    align-items: baseline;
+    padding: clamp(1.6rem, 3.4vh, 2.4rem) 0;
+    border-top: 1px solid rgba(251, 250, 248, 0.16);
+}
+.process-step:last-child { border-bottom: 1px solid rgba(251, 250, 248, 0.16); }
+
+.process-num {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: 0.9;
+    color: #8f8a6f;
+    font-variant-numeric: tabular-nums;
+}
+
+.process-name {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+    font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.5rem);
+    margin-bottom: 0.5rem;
+}
+
+.process-desc {
+    max-width: 60ch;
+    font-size: clamp(0.95rem, 0.92rem + 0.2vw, 1.02rem);
+    line-height: 1.6;
+    color: var(--muted-light);
+}
+
+/* Reveal on scroll: title/lead first, then each step rises while its olive
+   number slides in from the left and a hairline wipes across the top.
+   JS adds .is-in and sets --d (per-step stagger).
+   NOTE: intentionally NOT gated behind prefers-reduced-motion — this site's
+   environment reports reduced-motion, and Axel wants the reveals to always
+   play (same decision as the case-study count-up). */
+.process-title,
+.process-lead,
+.process-step {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.process.is-in .process-title,
+.process.is-in .process-lead,
+.process.is-in .process-step { opacity: 1; transform: none; }
+
+/* the big number slides in from the left, a beat behind its row */
+.process-num {
+    opacity: 0;
+    transform: translateX(-34px) scale(0.96);
+    transform-origin: left center;
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d, 0s) + 0.14s),
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--d, 0s) + 0.14s);
+}
+.process.is-in .process-num { opacity: 1; transform: none; }
+
+/* olive hairline wipes across the top divider of each step */
+.process-step::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #8f8a6f;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.process.is-in .process-step::after { transform: scaleX(1); }
+
+@media (max-width: 600px) {
+    .process-step { grid-template-columns: 1fr; gap: 0.5rem; }
+    .process-num { font-size: clamp(2.2rem, 12vw, 3.2rem); }
+}
+
 /* black spacer between about and projecten (stays ink so the fade is seamless) */
 .section-gap {
     height: 28vh;
@@ -397,7 +563,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
-   Projects — horizontal scroll with a black→white fade on entry
+   Projects - horizontal scroll with a black→white fade on entry
 ------------------------------------------------------------------ */
 
 .projects {
@@ -428,7 +594,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     will-change: transform;
 }
 
-/* one full-viewport panel each — keeps the layout identical on any laptop */
+/* one full-viewport panel each - keeps the layout identical on any laptop */
 .hpanel {
     position: relative;
     flex: 0 0 100vw;
@@ -541,7 +707,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 /* ------------------------------------------------------------------
-   Footer — signature left, contact form right
+   Footer - signature left, contact form right
 ------------------------------------------------------------------ */
 
 .footer {
@@ -982,15 +1148,59 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     .hero-nav { display: none; }
     .menu-toggle { display: flex; }
 
-    /* projects: panel stacks media over info; still scrolls horizontally */
+    /* Projects on mobile/tablet: a natural side-swipe carousel instead of the
+       scroll-jacked horizontal effect (people found it confusing — scrolling
+       DOWN moved panels sideways). The section now sits in normal vertical
+       flow: you scroll the PAGE down as usual, and swipe the cards sideways. */
+    .projects { padding-bottom: clamp(3rem, 10vh, 6rem); }
+    .projects-hscroll { height: auto; }               /* un-pin the 420vh track */
+    .projects-sticky {
+        position: static;
+        height: auto;
+        overflow: visible;
+        background: var(--paper);                      /* fixed white, no JS fade */
+        --panel-text: var(--text);
+        --panel-muted: var(--muted);
+    }
+    .projects-track {
+        height: auto;
+        transform: none !important;                    /* ignore any JS transform */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: clamp(1.2rem, 5vw, 2rem);
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;                         /* peek hints replace the scrollbar */
+    }
+    .projects-track::-webkit-scrollbar { display: none; }
+
+    /* "Projecten" becomes a normal centered heading above the row */
+    .projects-hlabel {
+        position: static;
+        transform: none;
+        display: block;
+        text-align: center;
+        padding: clamp(2rem, 6vh, 3rem) 0 clamp(1rem, 3vh, 1.6rem);
+    }
+    .projects-progress { display: none; }
+
+    /* each panel is a swipeable card; 86vw lets the next one peek in so it's
+       obvious you can swipe sideways */
     .hpanel {
+        flex: 0 0 86vw;
+        scroll-snap-align: start;
+        height: auto;
+        min-height: 62vh;
         grid-template-columns: 1fr;
-        gap: 1.6rem;
+        gap: 1.4rem;
         align-content: center;
-        padding: 12vh clamp(1.5rem, 6vw, 3rem);
+        padding: clamp(1.5rem, 5vh, 3rem) clamp(1.2rem, 5vw, 2rem);
     }
     .hpanel-media { height: 38vh; }
-    .projects-progress { display: none; }
+    /* drop the parallax overscan so the (now static) image sits clean */
+    .hpanel-media img { top: 0; left: 0; width: 100%; height: 100%; }
+
+    /* no scroll-overlap trick on mobile — footer just stacks below */
+    .footer { margin-top: 0; }
 }
 
 @media (max-width: 640px) {
@@ -1048,11 +1258,14 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 .pp-brand {
-    font-family: "Mrs Saint Delafield", cursive;
-    font-size: 2rem;
-    line-height: 1;
-    color: var(--text);
+    display: block;
+    line-height: 0;
     text-decoration: none;
+}
+.pp-brand img {
+    height: clamp(20px, 2.6vw, 30px);
+    width: auto;
+    display: block;
 }
 
 .pp-back {
@@ -1177,7 +1390,7 @@ a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
     font-size: clamp(1.8rem, 1.4rem + 2.2vw, 3.4rem);
 }
 
-/* media placeholder — swap in <video>/<img> later */
+/* media placeholder - swap in <video>/<img> later */
 .pp-media {
     position: relative;
     overflow: hidden;
@@ -1232,7 +1445,7 @@ a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
 .pp-foot a { color: var(--text); text-decoration: none; }
 .pp-foot a:hover { color: var(--olive); }
 
-/* project detail — the actual work (photo grid / video stack) */
+/* project detail - the actual work (photo grid / video stack) */
 .work {
     max-width: 1400px;
     margin: 0 auto;
@@ -1251,7 +1464,7 @@ a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
 }
 .work-meta strong { color: var(--text); font-weight: 500; }
 
-/* photo gallery — masonry columns so portrait & landscape keep their shape */
+/* photo gallery - masonry columns so portrait & landscape keep their shape */
 .work-grid {
     columns: 3 300px;
     column-gap: clamp(0.6rem, 1.4vw, 1.2rem);
@@ -1408,7 +1621,7 @@ a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
 }
 
 /* ------------------------------------------------------------------
-   Lightbox — click a fotografie gallery photo to enlarge it
+   Lightbox - click a fotografie gallery photo to enlarge it
 ------------------------------------------------------------------ */
 
 .lightbox {

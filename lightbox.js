@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
-   Lightbox — click any content image to view it enlarged.
+   Lightbox - click any content image to view it enlarged.
    Shared by all pages. Images inside links/buttons keep their action.
 ------------------------------------------------------------------ */
 (function () {
