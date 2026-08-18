@@ -169,7 +169,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 .hero-brand-logo {
-    height: clamp(22px, 2.9vw, 36px);
+    height: clamp(28px, 3.6vw, 46px);
     width: auto;
     display: block;
 }
@@ -511,7 +511,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 /* Reveal on scroll: title/lead first, then each step rises while its olive
    number slides in from the left and a hairline wipes across the top.
    JS adds .is-in and sets --d (per-step stagger).
-   NOTE: intentionally NOT gated behind prefers-reduced-motion — this site's
+   NOTE: intentionally NOT gated behind prefers-reduced-motion - this site's
    environment reports reduced-motion, and Axel wants the reveals to always
    play (same decision as the case-study count-up). */
 .process-title,
@@ -739,7 +739,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     font-weight: 700;
     text-transform: uppercase;
     line-height: 0.98;
-    font-size: clamp(2.4rem, 9vw, 7rem);
+    font-size: clamp(2.8rem, 10vw, 8rem);
     margin: 1.4rem 0 2.6rem;
     color: var(--ink);
 }
@@ -759,10 +759,10 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     text-decoration: none;
     border: 1px solid var(--ink);
     border-radius: 999px;
-    padding: 1.1rem 2.6rem;
+    padding: 0.85rem 2.1rem;
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     color: var(--ink);
     isolation: isolate;
     transition: color 0.35s ease;
@@ -809,7 +809,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 .fc3-sign {
     display: block;
-    height: clamp(26px, 4vw, 46px);
+    height: clamp(34px, 4.8vw, 58px);
     width: auto;
     margin: 3rem auto 0;
 }
@@ -1106,7 +1106,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .mobile-menu-sign {
     position: absolute;
     bottom: 2.4rem;
-    height: 26px;
+    height: 34px;
     width: auto;
     opacity: 0.85;
 }
@@ -1149,7 +1149,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     .menu-toggle { display: flex; }
 
     /* Projects on mobile/tablet: a natural side-swipe carousel instead of the
-       scroll-jacked horizontal effect (people found it confusing — scrolling
+       scroll-jacked horizontal effect (people found it confusing - scrolling
        DOWN moved panels sideways). The section now sits in normal vertical
        flow: you scroll the PAGE down as usual, and swipe the cards sideways. */
     .projects { padding-bottom: clamp(3rem, 10vh, 6rem); }
@@ -1167,6 +1167,14 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
         transform: none !important;                    /* ignore any JS transform */
         overflow-x: auto;
         scroll-snap-type: x mandatory;
+        /* leading/trailing padding matches scroll-padding so EVERY card (incl.
+           the first) rests at the same left inset — panel 01 no longer sits
+           flush while the others are inset. gap adds space between cards. */
+        gap: clamp(0.9rem, 4vw, 1.4rem);
+        /* trailing pad = viewport - panel - leading pad, so the LAST card can
+           scroll to the same left inset as the others (uniform snap) */
+        padding-left: clamp(1.2rem, 5vw, 2rem);
+        padding-right: calc(100vw - 82vw - clamp(1.2rem, 5vw, 2rem));
         scroll-padding-left: clamp(1.2rem, 5vw, 2rem);
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;                         /* peek hints replace the scrollbar */
@@ -1186,20 +1194,20 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     /* each panel is a swipeable card; 86vw lets the next one peek in so it's
        obvious you can swipe sideways */
     .hpanel {
-        flex: 0 0 86vw;
+        flex: 0 0 82vw;
         scroll-snap-align: start;
         height: auto;
         min-height: 62vh;
         grid-template-columns: 1fr;
         gap: 1.4rem;
         align-content: center;
-        padding: clamp(1.5rem, 5vh, 3rem) clamp(1.2rem, 5vw, 2rem);
+        padding: clamp(1.5rem, 5vh, 3rem) 0;
     }
     .hpanel-media { height: 38vh; }
     /* drop the parallax overscan so the (now static) image sits clean */
     .hpanel-media img { top: 0; left: 0; width: 100%; height: 100%; }
 
-    /* no scroll-overlap trick on mobile — footer just stacks below */
+    /* no scroll-overlap trick on mobile - footer just stacks below */
     .footer { margin-top: 0; }
 }
 
@@ -1263,7 +1271,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     text-decoration: none;
 }
 .pp-brand img {
-    height: clamp(20px, 2.6vw, 30px);
+    height: clamp(26px, 3.2vw, 38px);
     width: auto;
     display: block;
 }

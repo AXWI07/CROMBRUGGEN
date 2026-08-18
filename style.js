@@ -7,6 +7,12 @@
 (function () {
     'use strict';
 
+    // Always open at the hero on (re)load: stop the browser from restoring the
+    // previous scroll position. A real in-page anchor (#over/#projecten/...) is
+    // still honoured below by skipIntroTo().
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (!window.location.hash) window.scrollTo(0, 0);
+
     /* --------------------------------------------------------------
        1. Begin screen: one scroll gesture triggers the opening,
        which then plays out on its own (time-based, eased).
@@ -305,19 +311,21 @@
         requestAnimationFrame(projectsFrame);
         if (!projHscroll) return;
 
-        // mobile/tablet: native side-swipe carousel — don't scroll-jack, and
-        // clear any inline styles a prior desktop frame may have left behind
-        if (window.innerWidth <= 1024) {
+        var vw = window.innerWidth, vh = window.innerHeight;
+
+        // mobile/tablet: native side-swipe carousel - no horizontal scroll-jack,
+        // but KEEP the black->white fade, now driven by the section's vertical
+        // position as it scrolls up into view.
+        if (vw <= 1024) {
             if (projTrack.style.transform) projTrack.style.transform = '';
-            if (projSticky.style.backgroundColor) {
-                projSticky.style.backgroundColor = '';
-                projSticky.style.removeProperty('--panel-text');
-                projSticky.style.removeProperty('--panel-muted');
-            }
+            var mr = projSticky.getBoundingClientRect();
+            var mraw = clamp01((vh - mr.top) / (vh * 0.55));
+            var mf = mraw * mraw * (3 - 2 * mraw); // smoothstep
+            projSticky.style.backgroundColor = mix(INK, PAPER, mf);
+            projSticky.style.setProperty('--panel-text', mix(P_LIGHT, P_TEXT, mf));
+            projSticky.style.setProperty('--panel-muted', mix(P_MUTEDL, P_MUTED, mf));
             return;
         }
-
-        var vw = window.innerWidth, vh = window.innerHeight;
 
         var rect = projHscroll.getBoundingClientRect();
         var total = projHscroll.offsetHeight - vh;
