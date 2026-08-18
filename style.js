@@ -319,7 +319,10 @@
         if (vw <= 1024) {
             if (projTrack.style.transform) projTrack.style.transform = '';
             var mr = projSticky.getBoundingClientRect();
-            var mraw = clamp01((vh - mr.top) / (vh * 0.55));
+            // start the fade later (only once the section has scrolled up to
+            // ~55% of the viewport) and spread it over a longer distance so the
+            // black->white transition reads slow and gentle on mobile.
+            var mraw = clamp01((vh * 0.55 - mr.top) / (vh * 1.05));
             var mf = mraw * mraw * (3 - 2 * mraw); // smoothstep
             projSticky.style.backgroundColor = mix(INK, PAPER, mf);
             projSticky.style.setProperty('--panel-text', mix(P_LIGHT, P_TEXT, mf));

@@ -1152,7 +1152,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
        scroll-jacked horizontal effect (people found it confusing - scrolling
        DOWN moved panels sideways). The section now sits in normal vertical
        flow: you scroll the PAGE down as usual, and swipe the cards sideways. */
-    .projects { padding-bottom: clamp(3rem, 10vh, 6rem); }
+    .projects { padding-bottom: clamp(5.5rem, 18vh, 10rem); }
     .projects-hscroll { height: auto; }               /* un-pin the 420vh track */
     .projects-sticky {
         position: static;
@@ -1170,7 +1170,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
         /* leading/trailing padding matches scroll-padding so EVERY card (incl.
            the first) rests at the same left inset — panel 01 no longer sits
            flush while the others are inset. gap adds space between cards. */
-        gap: clamp(0.9rem, 4vw, 1.4rem);
+        gap: clamp(1.8rem, 8vw, 3rem);
         /* trailing pad = viewport - panel - leading pad, so the LAST card can
            scroll to the same left inset as the others (uniform snap) */
         padding-left: clamp(1.2rem, 5vw, 2rem);
