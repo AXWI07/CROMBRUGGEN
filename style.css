@@ -1189,7 +1189,16 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
         text-align: center;
         padding: clamp(2rem, 6vh, 3rem) 0 clamp(1rem, 3vh, 1.6rem);
     }
-    .projects-progress { display: none; }
+    /* progress bar sits statically below the swipeable row and fills as you
+       swipe through the cards (same visual as the desktop scrub bar) */
+    .projects-progress {
+        position: static;
+        display: block;
+        left: auto; right: auto; bottom: auto;
+        width: min(78vw, 420px);
+        margin: clamp(1.6rem, 5vh, 2.6rem) auto 0;
+        background: rgba(19, 18, 17, 0.16);
+    }
 
     /* each panel is a swipeable card; 86vw lets the next one peek in so it's
        obvious you can swipe sideways */

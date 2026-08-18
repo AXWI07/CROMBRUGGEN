@@ -320,13 +320,21 @@
             if (projTrack.style.transform) projTrack.style.transform = '';
             var mr = projSticky.getBoundingClientRect();
             // start the fade later (only once the section has scrolled up to
-            // ~55% of the viewport) and spread it over a longer distance so the
-            // black->white transition reads slow and gentle on mobile.
-            var mraw = clamp01((vh * 0.55 - mr.top) / (vh * 1.05));
+            // ~55% of the viewport) then run it over a moderate distance so the
+            // black->white transition reads smooth but not sluggish on mobile.
+            var mraw = clamp01((vh * 0.55 - mr.top) / (vh * 0.72));
             var mf = mraw * mraw * (3 - 2 * mraw); // smoothstep
             projSticky.style.backgroundColor = mix(INK, PAPER, mf);
             projSticky.style.setProperty('--panel-text', mix(P_LIGHT, P_TEXT, mf));
             projSticky.style.setProperty('--panel-muted', mix(P_MUTEDL, P_MUTED, mf));
+            // drive the bottom progress bar from the carousel's swipe position
+            // (mirrors the desktop scrub bar: empty on the first card, full on
+            // the last)
+            if (projBar) {
+                var mmax = projTrack.scrollWidth - projTrack.clientWidth;
+                var mprog = mmax > 0 ? clamp01(projTrack.scrollLeft / mmax) : 0;
+                projBar.style.transform = 'scaleX(' + mprog.toFixed(4) + ')';
+            }
             return;
         }
 
