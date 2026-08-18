@@ -155,18 +155,21 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     right: 0;
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     padding: 2rem clamp(1.5rem, 4vw, 3.5rem);
     z-index: 4;
 }
 
 .hero-brand {
-    font-family: "Mrs Saint Delafield", cursive;
-    font-size: 2rem;
-    line-height: 1;
-    color: #ffffff;
+    display: block;
+    line-height: 0;
     text-decoration: none;
-    letter-spacing: 0.02em;
+}
+
+.hero-brand-logo {
+    height: clamp(22px, 2.9vw, 36px);
+    width: auto;
+    display: block;
 }
 
 .hero-nav { display: flex; gap: 2rem; }
@@ -236,200 +239,156 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 
 .loader.is-up { transform: translateY(-100%); }
 
-.loader-word {
-    font-family: "Mrs Saint Delafield", cursive;
-    color: var(--paper);
-    font-size: clamp(4rem, 15vw, 13rem);
-    line-height: 1.35;          /* room for the tall C flourish so it isn't clipped */
-    padding-top: 0.12em;
-    white-space: nowrap;
-    /* handwriting: the cursive is uncovered left-to-right, as if being written.
-       Negative top/bottom insets keep the tall flourishes from being clipped. */
-    clip-path: inset(-18% 100% -18% -2%);
-    animation: loader-write 2.9s cubic-bezier(0.62, 0, 0.38, 1) 0.35s forwards;
-}
-
-@keyframes loader-write {
-    to { clip-path: inset(-18% -3% -18% -2%); }
-}
-
-.loader-hint {
-    position: absolute;
-    bottom: clamp(2rem, 6vh, 4rem);
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.9rem;
+/* the white symbol: a dim "ghost" copy with a bright copy on top that JS
+   reveals left-to-right (clip-path) as the load progresses — pikeproductions.be */
+.loader-logo {
+    position: relative;
+    height: clamp(88px, 15vh, 150px);
+    aspect-ratio: 993 / 1967;   /* trimmed symbol-white.png */
     opacity: 0;
-    animation: loader-hint-in 0.8s ease 3s forwards;
+    transform: scale(0.96);
+    animation: loader-logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
 }
 
-@keyframes loader-hint-in {
-    to { opacity: 1; }
+@keyframes loader-logo-in {
+    to { opacity: 1; transform: scale(1); }
 }
 
-.loader-hint-label {
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: var(--muted-light);
+.loader-logo-ghost,
+.loader-logo-fill {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
-.loader-hint-line {
-    width: 1px;
-    height: 3.4rem;
-    background: linear-gradient(var(--muted-light), transparent);
-    animation: hint-drop 2.2s ease-in-out infinite;
-    transform-origin: top;
+.loader-logo-ghost { opacity: 0.18; }
+
+/* revealed by JS: right inset goes 100% -> 0% with progress */
+.loader-logo-fill { clip-path: inset(0 100% 0 0); }
+
+.loader-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
 }
 
-@keyframes hint-drop {
-    0%   { transform: scaleY(0); }
-    45%  { transform: scaleY(1); }
-    100% { transform: scaleY(1); opacity: 0; }
+.loader-bar-fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: #8f8a6f;        /* olive-gold accent */
+    transform: scaleX(0);       /* driven by JS: 0 -> 1 */
+    transform-origin: 0 center;
 }
 
 /* ------------------------------------------------------------------
-   Message section — scroll-driven: rows slide apart, photo settles,
-   signature writes itself over the top
+   Over Senne — cinematic portrait, statement + signature reveal on scroll
 ------------------------------------------------------------------ */
 
-/* ink background on the track (not just the sticky) so a mobile URL-bar
-   collapse can never reveal the white body behind the section */
-.message-track { height: 280vh; background: var(--ink); }
-
-.message-sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100svh;
-    overflow: hidden;
+/* ink band that gives the Over section room to breathe below the hero */
+.over-gap {
+    height: clamp(9vh, 14vh, 18vh);
     background: var(--ink);
-    color: var(--paper);
 }
 
-.message-label {
+.over {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: var(--ink);
+}
+
+/* full-bleed grayscale portrait, pushes in as the section enters */
+.over-photo {
     position: absolute;
-    top: 2.2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    inset: 0;
+    transform: scale(1.12);
+    opacity: 0;
+    transition: transform 1.6s ease, opacity 1.2s ease;
+    will-change: transform, opacity;
+}
+
+.over.is-in .over-photo { transform: scale(1); opacity: 1; }
+
+.over-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.02);
+}
+
+/* gradient scrim keeps the bottom text legible over any photo */
+.over-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg,
+        rgba(10, 10, 11, 0.55) 0%,
+        rgba(10, 10, 11, 0)    30%,
+        rgba(10, 10, 11, 0.35) 55%,
+        rgba(10, 10, 11, 0.92) 100%);
+}
+
+.over-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    padding: clamp(2rem, 7vw, 5rem);
+    padding-bottom: clamp(3rem, 8vh, 6rem);
+}
+
+.over-label {
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.32em;
     color: var(--muted-light);
-    opacity: 0;
-    z-index: 4;
+    margin-bottom: 1.3rem;
 }
 
-/* two nowrap type rows, stacked around the vertical center */
-.message-rows {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.message-row {
-    white-space: nowrap;
-    width: max-content;
-    line-height: 1;
-    will-change: transform;
-}
-
-.message-row-a {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(3rem, 9vw, 7.5rem);
-    color: #8f8a6f; /* muted olive-gold, echoes the reference */
-}
-
-.message-row-b {
+.over-text {
     font-family: var(--font-sans);
     font-weight: 700;
-    font-size: clamp(3rem, 9.5vw, 8rem);
-    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    font-size: clamp(1.35rem, 2.8vw, 2.6rem);
+    line-height: 1.15;
     color: var(--paper);
 }
 
-/* grayscale photo card, settles into the center */
-.message-photo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: min(52vw, 560px);
-    aspect-ratio: 4 / 3;
-    transform: translate(-50%, -50%);
-    overflow: hidden;
-    z-index: 2;
-    will-change: transform;
+.over-accent { color: #8f8a6f; }
+
+/* each word brightens one by one once the section is in view (JS-wrapped) */
+.over-word {
+    opacity: 0.14;
+    transition: opacity 0.5s ease;
+    will-change: opacity;
 }
 
-.message-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: grayscale(1) contrast(1.05);
-}
-
-/* handwritten signature, revealed left-to-right while scrolling */
-.message-signature {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -54%) rotate(-7deg);
+/* handwritten signature writes itself left-to-right */
+.over-sig {
     font-family: "Mrs Saint Delafield", cursive;
-    font-size: clamp(4.5rem, 13vw, 11rem);
+    font-size: clamp(3.2rem, 8vw, 5.5rem);
     line-height: 1;
     color: #ffffff;
     white-space: nowrap;
-    z-index: 3;
-    pointer-events: none;
+    margin-top: 1.1rem;
+    transform: rotate(-6deg);
+    transform-origin: left center;
     clip-path: inset(-30% 100% -30% 0);
+    transition: clip-path 1.4s cubic-bezier(.4, 0, .15, 1) .3s;
     will-change: clip-path;
 }
 
-/* ------------------------------------------------------------------
-   About — statement text, words brighten one by one on scroll
------------------------------------------------------------------- */
-
-.about-track { height: 240vh; background: var(--ink); }
-
-.about-sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100svh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    background: var(--ink);
-}
-
-.about-text {
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-size: clamp(1.8rem, 5vw, 4.5rem);
-    line-height: 1.12;
-    text-transform: uppercase;
-    text-align: center;
-    max-width: min(90vw, 1100px);
-    color: var(--paper);
-}
-
-.about-text .about-accent { color: #8f8a6f; }
-
-.about-word {
-    opacity: 0.12;
-    will-change: opacity;
-}
+.over.is-in .over-sig { clip-path: inset(-30% 0% -30% 0); }
 
 /* black spacer between about and projecten (stays ink so the fade is seamless) */
 .section-gap {
@@ -683,11 +642,10 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .fc3-socials svg { width: 19px; height: 19px; }
 
 .fc3-sign {
-    font-family: "Mrs Saint Delafield", cursive;
-    font-size: clamp(2.6rem, 6vw, 4rem);
-    line-height: 1;
-    color: var(--ink);
-    margin-top: 3rem;
+    display: block;
+    height: clamp(26px, 4vw, 46px);
+    width: auto;
+    margin: 3rem auto 0;
 }
 
 .fc3-bottom {
@@ -982,9 +940,9 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 .mobile-menu-sign {
     position: absolute;
     bottom: 2.4rem;
-    font-family: "Mrs Saint Delafield", cursive;
-    font-size: 2.2rem;
-    color: var(--muted-light);
+    height: 26px;
+    width: auto;
+    opacity: 0.85;
 }
 
 .mobile-menu-close {
@@ -1024,25 +982,6 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
     .hero-nav { display: none; }
     .menu-toggle { display: flex; }
 
-    /* message section: photo in the upper area, type rows stacked UNDERNEATH
-       it (instead of behind), so both the picture and the text stay visible */
-    .message-photo {
-        top: 40%;
-        width: min(58vw, 440px);
-    }
-
-    /* signature writes over the photo; dropped so its top isn't clipped */
-    .message-signature {
-        top: 44%;
-    }
-
-    /* rows sit in the lower band, still sliding as a marquee */
-    .message-rows {
-        inset: 64% 0 0 0;
-        justify-content: flex-start;
-        gap: 0.3rem;
-    }
-
     /* projects: panel stacks media over info; still scrolls horizontally */
     .hpanel {
         grid-template-columns: 1fr;
@@ -1055,12 +994,6 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
 }
 
 @media (max-width: 640px) {
-    /* message section sizing for small screens */
-    .message-photo { width: 68vw; }
-    .message-row-a { font-size: 2.3rem; }
-    .message-row-b { font-size: 2.5rem; }
-    .message-signature { font-size: 5.2rem; }
-
     /* footer stacks and stays compact enough to fit the viewport, so the
        "Crombruggen" signature at the top never scrolls off when you reach
        the bottom of the page */
@@ -1082,17 +1015,13 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
    on every laptop width instead of scaling with vw (which made it look bigger
    on one screen and smaller on another). Mobile/tablet keep their own sizes. */
 @media (min-width: 1025px) {
-    .message-row-a { font-size: 7rem; }
-    .message-row-b { font-size: 7.5rem; }
-    .message-signature { font-size: 9.5rem; }
-    .about-text { font-size: 4rem; }
     .footer-sign { font-size: 4.2rem; }
     .hpanel-name { font-size: 3.8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .loader-hint-line { animation: none; }
+    .loader-logo { animation: none; opacity: 1; transform: none; }
 }
 
 /* ------------------------------------------------------------------

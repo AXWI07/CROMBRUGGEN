@@ -32,9 +32,7 @@
         window.addEventListener('touchstart', heroPlay, { once: true, passive: true });
     }
 
-    // the "Crombruggen" handwriting reveal is a pure CSS animation (loader-write)
-
-    // ease the hero blob in once the loader lifts away
+    // ease the hero in once the loading screen lifts away
     function revealHero() {
         var t0 = performance.now();
         (function grow(now) {
@@ -43,12 +41,9 @@
         })(t0);
     }
 
-    // first scroll gesture lifts the loading screen up to reveal the hero;
-    // the page stays locked until the loader is fully gone, so scrolling on
-    // the loading screen can never scroll the hero page underneath
-    function playIntro() {
-        if (introStarted) return;
-        introStarted = true;
+    // once the symbol has filled, lift the loading screen up to reveal the hero;
+    // the page stays locked until the loader is fully gone
+    function endIntro() {
         loader.classList.add('is-up');
         revealHero();
         var done = function (e) {
@@ -59,6 +54,28 @@
         };
         loader.addEventListener('transitionend', done);
         setTimeout(done, 1300); // fallback if transitionend doesn't fire
+    }
+
+    // Loading screen (pikeproductions.be style): the white symbol fills
+    // left-to-right and a progress bar grows, then it lifts away. Runs on its
+    // own — no scroll needed. Progress eases 0 -> 1 over ~2s, then holds a beat.
+    function playIntro() {
+        if (introStarted) return;
+        introStarted = true;
+        var fill = document.getElementById('loader-logo-fill');
+        var bar  = document.getElementById('loader-bar-fill');
+        var t0 = performance.now();
+        var DUR = 2000;
+        (function tick(now) {
+            var t = Math.min((now - t0) / DUR, 1);
+            // easeInOutCubic so it accelerates then settles
+            var p = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            introProgress = p;
+            if (fill) fill.style.clipPath = 'inset(0 ' + ((1 - p) * 100).toFixed(2) + '% 0 0)';
+            if (bar)  bar.style.transform  = 'scaleX(' + p.toFixed(4) + ')';
+            if (t < 1) { requestAnimationFrame(tick); }
+            else { setTimeout(endIntro, 280); }   // hold full for a beat, then lift
+        })(t0);
     }
 
     /* Lenis smooth scrolling — turns every notched wheel step into a ~1.2s
@@ -88,13 +105,11 @@
         });
     }
 
-    window.addEventListener('wheel', playIntro, { passive: true, once: false });
-    window.addEventListener('touchmove', playIntro, { passive: true });
-    window.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ' || e.key === 'Enter') {
-            playIntro();
-        }
-    });
+    // the loading screen runs on its own as soon as the page is ready
+    if (document.readyState === 'complete') playIntro();
+    else window.addEventListener('load', playIntro);
+    // safety net: never leave the loader stuck if 'load' is slow to fire
+    setTimeout(playIntro, 1200);
 
     /* Arriving via an in-page anchor (e.g. "← Projecten" back from a project
        page loads index.html#projecten): skip the begin screen entirely and
@@ -149,88 +164,19 @@
     });
 
     /* --------------------------------------------------------------
-       2. Message section: scroll-scrubbed rows / photo / signature
+       2. Over Senne: portrait pushes in, statement brightens word by
+       word, signature writes itself — one reveal when scrolled into view
     -------------------------------------------------------------- */
-
-    var msgTrack = document.getElementById('message-track');
-    var msgLabel = document.getElementById('message-label');
-    var msgRowA = document.getElementById('message-row-a');
-    var msgRowB = document.getElementById('message-row-b');
-    var msgPhoto = document.getElementById('message-photo');
-    var msgSig = document.getElementById('message-signature');
 
     function clamp01(v) { return Math.min(Math.max(v, 0), 1); }
-    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
-    var msgP = 0;
-    var mA = 0, mB = 0, msgLast = 0;
+    var overSection = document.getElementById('over');
+    var overText = document.getElementById('over-text');
 
-    function mod(x, u) { return ((x % u) + u) % u; }
-
-    // build a seamless marquee: repeat the phrase past 2x the viewport, then
-    // duplicate so the two halves are identical — loop unit = scrollWidth / 2
-    function buildMarquee(el) {
-        var phrase = el.getAttribute('data-phrase') || '';
-        el.textContent = phrase;
-        var one = el.scrollWidth || 1;
-        var reps = Math.ceil((window.innerWidth * 2) / one) + 2;
-        var half = new Array(reps + 1).join(phrase);
-        el.textContent = half + half;
-        el.__unit = (el.scrollWidth / 2) || 1;
-    }
-    function buildAllMarquees() { buildMarquee(msgRowA); buildMarquee(msgRowB); }
-    buildAllMarquees();
-    window.addEventListener('resize', buildAllMarquees);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildAllMarquees);
-
-    function messageFrame(now) {
-        requestAnimationFrame(messageFrame);
-        if (!msgLast) msgLast = now;
-        var dt = Math.min(now - msgLast, 50); msgLast = now;
-
-        var rect = msgTrack.getBoundingClientRect();
-        var total = msgTrack.offsetHeight - window.innerHeight;
-        var target = total > 0 ? clamp01(-rect.top / total) : 0;
-
-        // inertia so wheel steps become one continuous glide
-        msgP += (target - msgP) * 0.09;
-        if (Math.abs(target - msgP) < 0.0005) msgP = target;
-
-        // continuous drift keeps the rows moving after the scroll settles;
-        // the scroll position adds a phase shift so they slide apart as you go
-        mA += 0.026 * dt;
-        mB += 0.030 * dt;
-        var uA = msgRowA.__unit, uB = msgRowB.__unit;
-        var tA = -mod(mA + msgP * 0.45 * uA, uA);        // drifts left
-        var tB =  mod(mB + msgP * 0.45 * uB, uB) - uB;   // drifts right
-        msgRowA.style.transform = 'translate3d(' + tA.toFixed(2) + 'px, 0, 0)';
-        msgRowB.style.transform = 'translate3d(' + tB.toFixed(2) + 'px, 0, 0)';
-
-        // photo settles from large to card size (same on every screen; on
-        // mobile/tablet the type rows sit under the photo, not behind it)
-        var settle = easeOut(clamp01(msgP / 0.55));
-        msgPhoto.style.transform =
-            'translate(-50%, -50%) scale(' + (1.45 - 0.45 * settle) + ')';
-
-        // signature writes itself left-to-right
-        var sig = clamp01((msgP - 0.3) / 0.55);
-        msgSig.style.clipPath = 'inset(-30% ' + ((1 - sig) * 100) + '% -30% 0)';
-
-        msgLabel.style.opacity = clamp01(msgP * 4).toFixed(3);
-    }
-    requestAnimationFrame(messageFrame);
-
-    /* --------------------------------------------------------------
-       2b. About section: word-by-word reveal on scroll
-    -------------------------------------------------------------- */
-
-    var aboutTrack = document.getElementById('about-track');
-    var aboutText = document.getElementById('about-text');
-
-    // wrap every word in a span, keeping accent styling intact
-    var aboutWords = [];
-    Array.prototype.slice.call(aboutText.childNodes).forEach(function (node) {
-        var isAccent = node.nodeType === 1 && node.classList.contains('about-accent');
+    // wrap every word of the statement in a span, keeping accent styling intact
+    var overWords = [];
+    Array.prototype.slice.call(overText.childNodes).forEach(function (node) {
+        var isAccent = node.nodeType === 1 && node.classList.contains('over-accent');
         var text = node.textContent;
         var frag = document.createDocumentFragment();
         text.split(/(\s+)/).forEach(function (part) {
@@ -239,35 +185,33 @@
                 frag.appendChild(document.createTextNode(part));
             } else {
                 var span = document.createElement('span');
-                span.className = 'about-word' + (isAccent ? ' about-accent' : '');
+                span.className = 'over-word' + (isAccent ? ' over-accent' : '');
                 span.textContent = part;
                 frag.appendChild(span);
-                aboutWords.push(span);
+                overWords.push(span);
             }
         });
-        aboutText.replaceChild(frag, node);
+        overText.replaceChild(frag, node);
     });
 
-    var aboutP = 0;
+    // stagger the brighten so it reads left-to-right after the photo lands
+    overWords.forEach(function (w, i) {
+        w.style.transitionDelay = (0.25 + i * 0.05) + 's';
+    });
 
-    function aboutFrame() {
-        requestAnimationFrame(aboutFrame);
-        var rect = aboutTrack.getBoundingClientRect();
-        var total = aboutTrack.offsetHeight - window.innerHeight;
-        var target = total > 0 ? clamp01(-rect.top / total) : 0;
-
-        aboutP += (target - aboutP) * 0.1;
-        if (Math.abs(target - aboutP) < 0.0005) aboutP = target;
-
-        // finish the reveal by half the track, before the footer wipes up over it
-        var pw = clamp01(aboutP / 0.5);
-        var n = aboutWords.length;
-        for (var i = 0; i < n; i++) {
-            var w = clamp01(pw * (n + 3) - i);
-            aboutWords[i].style.opacity = (0.12 + 0.88 * w).toFixed(3);
-        }
-    }
-    requestAnimationFrame(aboutFrame);
+    // reveal when the section scrolls into view; reverse on leave so it replays
+    var overIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                overSection.classList.add('is-in');
+                overWords.forEach(function (w) { w.style.opacity = '1'; });
+            } else {
+                overSection.classList.remove('is-in');
+                overWords.forEach(function (w) { w.style.opacity = ''; });
+            }
+        });
+    }, { threshold: 0.35 });
+    overIO.observe(overSection);
 
     /* --------------------------------------------------------------
        2b-1. Projects: horizontal scroll with a black→white fade on entry
@@ -309,7 +253,7 @@
         if (projBar) projBar.style.transform = 'scaleX(' + projCur.toFixed(4) + ')';
 
         // black → white fade over the first 18% of the pin (smoothstep), so it
-        // continues the black about-section and turns white as the panels start
+        // continues the black Over-Senne section and turns white as panels start
         var raw = clamp01(projCur / 0.18);
         var f = raw * raw * (3 - 2 * raw);
         projSticky.style.backgroundColor = mix(INK, PAPER, f);

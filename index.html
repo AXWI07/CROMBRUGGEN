@@ -24,7 +24,9 @@
                 <div class="hero-scrim" aria-hidden="true"></div>
 
                 <header class="hero-header">
-                    <a class="hero-brand" href="#">Crombruggen</a>
+                    <a class="hero-brand" href="#" aria-label="Crombruggen">
+                        <img class="hero-brand-logo" src="images/logo/wordmark-white.png" alt="Crombruggen" width="3429" height="859">
+                    </a>
                     <nav class="hero-nav" aria-label="Hoofdnavigatie">
                         <a href="#over">Over</a>
                         <a href="#projecten">Projecten</a>
@@ -46,38 +48,29 @@
         </div>
     </div>
 
-    <!-- Loading screen: black, "Crombruggen" writes itself; slides up on scroll -->
+    <!-- Loading screen: black; the white symbol fills left-to-right as the page
+         loads (progress bar at the bottom), then lifts away to reveal the hero -->
     <div class="loader" id="loader">
-        <span class="loader-word">Crombruggen</span>
-        <span class="loader-hint">
-            <span class="loader-hint-label">Scroll</span>
-            <span class="loader-hint-line"></span>
-        </span>
+        <div class="loader-logo">
+            <img class="loader-logo-ghost" src="images/logo/symbol-white.png" alt="" aria-hidden="true">
+            <img class="loader-logo-fill" id="loader-logo-fill" src="images/logo/symbol-white.png" alt="Crombruggen">
+        </div>
+        <div class="loader-bar"><span class="loader-bar-fill" id="loader-bar-fill"></span></div>
     </div>
 
-    <!-- Scroll section: type rows slide apart, photo card settles, signature writes itself -->
-    <section class="message" aria-label="Achter de lens">
-        <div class="message-track" id="message-track">
-            <div class="message-sticky">
-                <p class="message-label" id="message-label">Achter de lens</p>
-                <div class="message-rows" aria-hidden="true">
-                    <p class="message-row message-row-a" id="message-row-a" data-phrase="FOTOGRAFIE — "></p>
-                    <p class="message-row message-row-b" id="message-row-b" data-phrase="VIDEOGRAFIE • "></p>
-                </div>
-                <figure class="message-photo" id="message-photo">
-                    <img src="images/portret.jpeg" alt="Portret door Crombruggen">
-                </figure>
-                <p class="message-signature" id="message-signature" aria-hidden="true">Crombruggen</p>
-            </div>
-        </div>
-    </section>
+    <!-- Breathing room between the hero and the Over Senne section -->
+    <div class="over-gap" aria-hidden="true"></div>
 
-    <!-- About: statement text, revealed word by word on scroll -->
-    <section class="about" id="over" aria-label="Over Senne">
-        <div class="about-track" id="about-track">
-            <div class="about-sticky">
-                <p class="about-text" id="about-text">Hey, ik ben <span class="about-accent">Senne</span>. Met <span class="about-accent">fotografie</span> en <span class="about-accent">video</span> leg ik échte momenten, mensen en verhalen vast. Natuurlijk, sfeervol en met een eigen karakter. Van portret tot evenement. Bekijk mijn werk en ontdek de <span class="about-accent">verhalen</span>.</p>
-            </div>
+    <!-- Over Senne: cinematic portrait, statement + signature revealed on scroll -->
+    <section class="over" id="over" aria-label="Over Senne">
+        <figure class="over-photo">
+            <img src="images/portret.jpeg" alt="Portret van Senne Crombruggen">
+        </figure>
+        <div class="over-scrim" aria-hidden="true"></div>
+        <div class="over-inner">
+            <p class="over-label">Over Senne</p>
+            <p class="over-text" id="over-text">Hey, ik ben <span class="over-accent">Senne</span>. Met <span class="over-accent">fotografie</span> en <span class="over-accent">video</span> leg ik échte momenten, mensen en verhalen vast.</p>
+            <p class="over-sig" aria-hidden="true">Crombruggen</p>
         </div>
     </section>
 
@@ -156,7 +149,7 @@
                     </svg>
                 </a>
             </div>
-            <p class="fc3-sign footer-rv" aria-hidden="true">Crombruggen</p>
+            <img class="fc3-sign footer-rv" src="images/logo/wordmark-black.png" alt="Crombruggen" aria-hidden="true">
             <div class="fc3-bottom">
                 <span>&copy; 2026 Crombruggen</span>
                 <span>Designed by <a href="https://awwebdesign.be" target="_blank" rel="noopener">AW Webdesign</a></span>
@@ -176,7 +169,7 @@
             <a href="#projecten">Projecten</a>
             <a href="#contact">Contact</a>
         </nav>
-        <p class="mobile-menu-sign" aria-hidden="true">Crombruggen</p>
+        <img class="mobile-menu-sign" src="images/logo/wordmark-white.png" alt="Crombruggen" aria-hidden="true">
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
