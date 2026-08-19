@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0b">
     <title>Senne Crombruggen · Videograaf &amp; Fotograaf in Vlaanderen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,6 +43,10 @@
     "name": "Vlaanderen"
   },
   "knowsLanguage": "nl-BE",
+  "sameAs": [
+    "https://www.instagram.com/crombruggen_/",
+    "https://www.linkedin.com/in/senne-van-crombruggen-a78b712a2/"
+  ],
   "priceRange": "€€",
   "founder": {
     "@type": "Person",
@@ -89,6 +94,8 @@
 </head>
 <body>
 
+    <a class="skip-link" href="#main">Naar hoofdinhoud</a>
+
     <!-- Scroll stage: sticky hero + shutter overlay that opens while scrolling -->
     <div class="stage" id="stage">
         <div class="stage-sticky">
@@ -97,13 +104,14 @@
             <section class="hero" aria-label="Intro">
                 <video class="hero-video" autoplay muted loop playsinline preload="metadata"
                        poster="images/covers/hero-diegem-poster.jpg" aria-hidden="true">
+                    <source src="images/covers/hero-av1.mp4" type='video/mp4; codecs="av01.0.05M.08"'>
                     <source src="images/covers/hero-diegem.mp4" type="video/mp4">
                 </video>
                 <div class="hero-scrim" aria-hidden="true"></div>
 
                 <header class="hero-header">
                     <a class="hero-brand" href="#" aria-label="Crombruggen">
-                        <img class="hero-brand-logo" src="images/logo/wordmark-white.png" alt="Crombruggen" width="3429" height="859">
+                        <img class="hero-brand-logo" src="images/logo/wordmark-white.png" alt="Crombruggen" width="800" height="200">
                     </a>
                     <nav class="hero-nav" aria-label="Hoofdnavigatie">
                         <a href="#over">Over</a>
@@ -139,10 +147,15 @@
     <!-- Breathing room between the hero and the Over Senne section -->
     <div class="over-gap" aria-hidden="true"></div>
 
+    <main id="main">
+
     <!-- Over Senne: cinematic portrait, statement + signature revealed on scroll -->
     <section class="over" id="over" aria-label="Over Senne">
         <figure class="over-photo">
-            <img src="images/portret.jpeg" alt="Portret van Senne Crombruggen">
+            <picture>
+                <source type="image/webp" srcset="images/portret.webp">
+                <img src="images/portret.jpeg" alt="Portret van Senne Crombruggen" width="1040" height="542" loading="lazy" decoding="async">
+            </picture>
         </figure>
         <div class="over-scrim" aria-hidden="true"></div>
         <div class="over-inner">
@@ -222,7 +235,7 @@
                 <div class="projects-track" id="projects-track">
 
                     <article class="hpanel">
-                        <div class="hpanel-media"><img loading="lazy" decoding="async" src="images/web/Diegem%20Cross/8L2A3669.jpg" alt="Videoproductie Diegem Cross door Senne Crombruggen" data-parallax></div>
+                        <div class="hpanel-media"><picture><source type="image/webp" srcset="images/web/Diegem%20Cross/8L2A3669.webp"><img loading="lazy" decoding="async" src="images/web/Diegem%20Cross/8L2A3669.jpg" alt="Videoproductie Diegem Cross door Senne Crombruggen" width="1000" height="1500" data-parallax></picture></div>
                         <div class="hpanel-info">
                             <span class="hpanel-num">01</span>
                             <h3 class="hpanel-name">Video producties</h3>
@@ -232,7 +245,7 @@
                     </article>
 
                     <article class="hpanel">
-                        <div class="hpanel-media"><img loading="lazy" decoding="async" src="images/Fotografie_Cover.jpg" alt="Sportfotografie GP Jacobs door Senne Crombruggen" data-parallax></div>
+                        <div class="hpanel-media"><picture><source type="image/webp" srcset="images/Fotografie_Cover.webp"><img loading="lazy" decoding="async" src="images/Fotografie_Cover.jpg" alt="Sportfotografie GP Jacobs door Senne Crombruggen" width="1000" height="1500" data-parallax></picture></div>
                         <div class="hpanel-info">
                             <span class="hpanel-num">02</span>
                             <h3 class="hpanel-name">Fotografie</h3>
@@ -242,7 +255,7 @@
                     </article>
 
                     <article class="hpanel">
-                        <div class="hpanel-media"><img loading="lazy" decoding="async" src="images/web/Diegem%20Cross/8L2A5857.jpg" alt="Social media beeld Diegem Cross door Senne Crombruggen" data-parallax></div>
+                        <div class="hpanel-media"><picture><source type="image/webp" srcset="images/web/Diegem%20Cross/8L2A5857.webp"><img loading="lazy" decoding="async" src="images/web/Diegem%20Cross/8L2A5857.jpg" alt="Social media beeld Diegem Cross door Senne Crombruggen" width="1500" height="1000" data-parallax></picture></div>
                         <div class="hpanel-info">
                             <span class="hpanel-num">03</span>
                             <h3 class="hpanel-name">Social media</h3>
@@ -256,6 +269,8 @@
             </div>
         </div>
     </section>
+
+    </main>
 
     <!-- Footer - contact CTA (variant 3) -->
     <footer class="footer" id="contact" aria-label="Contact">
@@ -286,7 +301,7 @@
                     </svg>
                 </a>
             </div>
-            <img class="fc3-sign footer-rv" src="images/logo/wordmark-black.png" alt="Crombruggen" aria-hidden="true">
+            <img class="fc3-sign footer-rv" src="images/logo/wordmark-black.png" alt="Crombruggen" width="800" height="200" loading="lazy" aria-hidden="true">
             <div class="fc3-bottom">
                 <span>&copy; 2026 Crombruggen</span>
                 <span>Designed by <a href="https://awwebdesign.be" target="_blank" rel="noopener">AW Webdesign</a></span>
@@ -306,7 +321,7 @@
             <a href="#projecten">Projecten</a>
             <a href="#contact">Contact</a>
         </nav>
-        <img class="mobile-menu-sign" src="images/logo/wordmark-white.png" alt="Crombruggen" aria-hidden="true">
+        <img class="mobile-menu-sign" src="images/logo/wordmark-white.png" alt="Crombruggen" width="800" height="200" loading="lazy" aria-hidden="true">
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
