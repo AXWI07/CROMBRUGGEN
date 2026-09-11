@@ -1,0 +1,20 @@
+# Crombruggen: één vaste URL voor Google.
+# De site was bereikbaar via http, https, www en /index.html (allemaal 200, geen
+# redirect). Alles gaat nu permanent (301) naar https://crombruggen.be/ zodat
+# Google maar één versie van elke pagina ziet en de signalen niet verdeeld raken.
+# Combell draait Apache achter een nginx-proxy: daarom ook X-Forwarded-Proto.
+
+RewriteEngine On
+
+# www.crombruggen.be -> crombruggen.be
+RewriteCond %{HTTP_HOST} ^www\.crombruggen\.be$ [NC]
+RewriteRule ^ https://crombruggen.be%{REQUEST_URI} [L,R=301]
+
+# http -> https
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://crombruggen.be%{REQUEST_URI} [L,R=301]
+
+# /index.html -> /
+RewriteCond %{THE_REQUEST} \s/index\.html[\s?]
+RewriteRule ^index\.html$ https://crombruggen.be/ [L,R=301]

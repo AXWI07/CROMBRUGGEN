@@ -1190,7 +1190,7 @@ body.is-locked { overflow: hidden; height: 100vh; height: 100svh; }
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         /* leading/trailing padding matches scroll-padding so EVERY card (incl.
-           the first) rests at the same left inset — panel 01 no longer sits
+           the first) rests at the same left inset - panel 01 no longer sits
            flush while the others are inset. gap adds space between cards. */
         gap: clamp(1.8rem, 8vw, 3rem);
         /* trailing pad = viewport - panel - leading pad, so the LAST card can
@@ -1711,3 +1711,52 @@ a.pp-project:hover .pp-cta::after { transform: translateX(5px); }
     transition: opacity 0.3s ease;
 }
 .lightbox-close:hover { opacity: 1; }
+
+/* ------------------------------------------------------------------
+   SEO pass 2 (2026-09): brand line (= the page H1), intro copy,
+   portfolio copy and a contact route on every project page
+------------------------------------------------------------------- */
+/* brand H1 is visually hidden (Axel wants the hero clean) but stays in the
+   page for Google and screen readers - clip pattern, NOT display:none */
+.hero-kicker {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.over-intro {
+    margin-top: clamp(1.2rem, 3vh, 1.8rem);
+    max-width: 52ch;
+    font-size: clamp(0.98rem, 0.94rem + 0.2vw, 1.1rem);
+    line-height: 1.6;
+    color: rgba(251, 250, 248, 0.72);
+}
+
+.pp-copy { margin-top: 1.4rem; max-width: 62ch; }
+.pp-copy p {
+    font-size: clamp(0.98rem, 0.94rem + 0.2vw, 1.1rem);
+    line-height: 1.7;
+    color: var(--muted);
+}
+.pp-copy p + p { margin-top: 1rem; }
+
+.pp-contact {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 clamp(1.5rem, 6vw, 7rem) clamp(5rem, 12vh, 9rem);
+}
+.pp-contact-text {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.1;
+    font-size: clamp(1.3rem, 1rem + 1.6vw, 2.2rem);
+}
+.pp-contact .pp-button { margin-top: 1.4rem; }
